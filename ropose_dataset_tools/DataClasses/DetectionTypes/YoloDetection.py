@@ -1,5 +1,5 @@
 
-from data_framework.DataClasses.Dataset.BoundingBox import BoundingBox
+from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
 
 class YoloDetection(object):
 

@@ -1,4 +1,4 @@
-from DataClasses.BaseTypes.BaseType import BaseType
+from ropose_dataset_tools.DataClasses.BaseTypes.BaseType import BaseType
 from typing import List, Dict
 
 class Vector2D(BaseType):

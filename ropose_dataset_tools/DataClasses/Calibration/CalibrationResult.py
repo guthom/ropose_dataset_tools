@@ -1,5 +1,5 @@
-from DataClasses.BaseTypes.BaseType import BaseType
-from DataClasses.BaseTypes.Pose import Pose
+from ropose_dataset_tools.DataClasses.BaseTypes.BaseType import BaseType
+from ropose_dataset_tools.DataClasses.BaseTypes.Pose import Pose
 from typing import List, Dict
 import numpy as np
 
