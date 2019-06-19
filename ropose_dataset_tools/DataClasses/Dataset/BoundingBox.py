@@ -159,10 +159,15 @@ class BoundingBox(object):
         return np.array(image[int(self.y1):int(self.y2), int(self.x1):int(self.x2)])
 
     def Draw(self, image, description=None, color=[0.0, 0.0, 0.0, 1.0]):
-        cv2.rectangle(image, (self.x1, self.y1), (self.x2, self.y2), color, thickness=5)
+        p1 = (int(self.x1), int(self.y1))
+        p2 = (int(self.x2), int(self.y2))
+        cv2.rectangle(image, p1, p2, color, thickness=5)
+
+        if description is not None:
+            cv2.putText(image, description, p1, fontScale=5, fontFace=5, color=color)
         return image
 
-    def AddPatch(self, plt, ax, description, color=[0.0, 0.0, 0.0, 1.0]):
+    def AddPatch(self, plt, ax, description=None, color = [0.0, 0.0, 0.0, 1.0]):
         # Create a Rectangle patch
         bbox = patches.Rectangle((self.x1, self.y1), self.width, self.height, linewidth=2,
                                  edgecolor=color,
@@ -171,7 +176,22 @@ class BoundingBox(object):
         # Add the bbox to the plot
         ax.add_patch(bbox)
         # Add label
-        plt.text(self.x1, self.y1, s=description, color='white', verticalalignment='top',
-                 bbox={'color': color, 'pad': 0})
+        if description is not None:
+            plt.text(self.x1, self.y1, s=description, color='white', verticalalignment='top',
+                     bbox={'color': color, 'pad': 0})
 
         return plt
+
+    def Area(self):
+        return self.height * self.width
+
+    def CalculateOverlapp(self, target: "BoundingBox") -> float:
+        x1 = max(self.x1, target.x1)
+        y1 = max(self.y1, target.y1)
+        x2 = min(self.x2, target.x2)
+        y2 = min(self.y2, target.y2)
+
+        interArea = (x1-x2)*(y1-y2)
+
+        return interArea
+

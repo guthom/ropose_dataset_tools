@@ -1,6 +1,7 @@
 from __future__ import print_function, division
 from typing import Tuple
-from ropose_dataset_tools.DataClasses import *
+from ropose_dataset_tools.DataClasses.Dataset.Dataset import Dataset
+from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
 from math import cos, sin, pi
 import copy
 import random
@@ -37,8 +38,12 @@ class Augmenter:
             self.augmentMethods.append(self.scale)
 
     @staticmethod
-    def GetRandomValues(inputRes: Tuple[int], outputRes: Tuple[int]):
+    def GetRandomValues(inputRes: Tuple[int, int], outputRes: Tuple[int, int] = None):
         AugCollection = dict()
+
+        if outputRes is None:
+            outputRes = inputRes
+
 
         AugCollection["flip"] = bool(random.getrandbits(1))
         AugCollection["scale"] = random.uniform(0.85, 1.15)
@@ -47,11 +52,12 @@ class Augmenter:
         placing_inp = [random.randint(-25, 25), #x direction
                        random.randint(-25, 25)] #y direction
         AugCollection["placing_inp"] = placing_inp
+        AugCollection["inputRes"] = inputRes
+
         gtFactor = [inputRes[0]/outputRes[0], inputRes[1]/outputRes[1]]
         AugCollection["placing_gt"] = [placing_inp[0] / gtFactor[0], placing_inp[1] / gtFactor[1]]
-
-        AugCollection["inputRes"] = inputRes
         AugCollection["outputRes"] = outputRes
+
 
         return AugCollection
 
@@ -131,7 +137,11 @@ class Augmenter:
                                     [0., 0., 1.]])
 
         M_img = center2zero_inp.dot(rotate).dot(flip).dot(translation_inp).dot(zero2center_inp).dot(scale)
-        M_gt = center2zero_gt.dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
+
+        if outputRes is not None:
+            M_gt = center2zero_gt.dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
+        else:
+            M_gt = None
 
         return M_img, M_gt
 

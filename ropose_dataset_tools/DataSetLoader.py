@@ -41,21 +41,10 @@ def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool 
 
     return datasets
 
+
 def LoadDataSet(path: str) -> List[type(Dataset)]:
     return DataOrganizer(dataPath=path).datasets
 
-
-def LoadDataSets(path: str) -> List[type(Dataset)]:
-    dataSets = GetDataSets(path)
-
-    roposData: List[type(DataOrganizer)] = []
-    datasets: List[type(Dataset)] = []
-
-    for datasetDir in dataSets:
-        roposData.append(DataOrganizer(dataPath=datasetDir))
-        datasets.extend(roposData[-1].datasets)
-
-    return datasets
 
 def FindImages(path: str)-> List[str]:
     images = []

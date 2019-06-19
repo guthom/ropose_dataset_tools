@@ -19,8 +19,9 @@ def GetDataSets(path: str):
 
     return dataDirs
 
-def LoadCocoSets(cocoPath, cocoDataset="train2017", mixWithZeroHumans=False, mixWithZeroHuamnsFactor=0.1) -> List[type(Dataset)]:
-    dataDir = config.cocoPath
+def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
+                 mixWithZeroHuamnsFactor=0.1) -> List[type(Dataset)]:
+    dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/person_keypoints_{}.json'.format(dataDir, dataType)
 
@@ -81,7 +82,7 @@ def LoadCocoSets(cocoPath, cocoDataset="train2017", mixWithZeroHumans=False, mix
 
     return datasets
 
-def LoadCocoSetYolo(cocoPath, cocoDataset="train2017")  -> List[type(Dataset)]:
+def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017")  -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/instances_{}.json'.format(dataDir, dataType)
