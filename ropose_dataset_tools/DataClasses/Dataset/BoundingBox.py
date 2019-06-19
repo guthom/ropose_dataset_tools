@@ -158,13 +158,14 @@ class BoundingBox(object):
     def CropImage(self, image):
         return np.array(image[int(self.y1):int(self.y2), int(self.x1):int(self.x2)])
 
-    def Draw(self, image, description=None, color=[0.0, 0.0, 0.0, 1.0]):
+    def Draw(self, image, description=None, color=[0.0, 0.0, 0.0]):
         p1 = (int(self.x1), int(self.y1))
         p2 = (int(self.x2), int(self.y2))
         cv2.rectangle(image, p1, p2, color, thickness=5)
 
         if description is not None:
-            cv2.putText(image, description, p1, fontScale=5, fontFace=5, color=color)
+            cv2.putText(image, description, p1, fontScale=1, thickness=4,
+                        fontFace=cv2.FONT_HERSHEY_SIMPLEX, color=color)
         return image
 
     def AddPatch(self, plt, ax, description=None, color = [0.0, 0.0, 0.0, 1.0]):
