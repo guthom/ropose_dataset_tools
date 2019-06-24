@@ -10,7 +10,6 @@ class YoloDetection(object):
 
     @classmethod
     def FromPredictionTensor(cls, prediction):
-        #prediction = prediction
         bb = BoundingBox(int(prediction[0].item()), int(prediction[1].item()),
                          int(prediction[2].item()), int(prediction[3].item()))
 

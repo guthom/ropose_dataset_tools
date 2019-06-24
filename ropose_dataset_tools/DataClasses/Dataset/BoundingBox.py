@@ -146,29 +146,33 @@ class BoundingBox(object):
         return max(0, min(value, clipVal))
 
 
-    def AddPadding(self, padX, padY):
+    def AddPadding(self, padX = 0.0, padY = 0.0):
         return BoundingBox(self.x1 + padX, self.y1 + padY,  self.x2 + padX, self.y2 + padY)
 
-    def SubstractPadding(self, padX, padY):
+    def SubstractPadding(self,  padX = 0.0, padY = 0.0):
         return BoundingBox(self.x1 - padX, self.y1 - padY,  self.x2 - padX, self.y2 - padY)
 
     def ScaleBB(self, scaleX, scaleY):
         return BoundingBox(self.x1 * scaleX, self.y1 * scaleY, self.x2 * scaleX, self.y2 * scaleY)
 
+    def ExtendBB(self, scale):
+        return BoundingBox(self.x1 - (self.x1 / scale), self.y1 - (self.y1 / scale),
+                           self.x2 + (self.x2 / scale), self.y2 + (self.y2 / scale))
+
     def CropImage(self, image):
         return np.array(image[int(self.y1):int(self.y2), int(self.x1):int(self.x2)])
 
-    def Draw(self, image, description=None, color=[0.0, 0.0, 0.0]):
+    def Draw(self, image, description=None, color=list([0.0, 0.0, 0.0])):
         p1 = (int(self.x1), int(self.y1))
         p2 = (int(self.x2), int(self.y2))
-        cv2.rectangle(image, p1, p2, color, thickness=5)
+        cv2.rectangle(image, p1, p2, color, thickness=2)
 
         if description is not None:
-            cv2.putText(image, description, p1, fontScale=1, thickness=4,
+            cv2.putText(image, description, p1, fontScale=1, thickness=2,
                         fontFace=cv2.FONT_HERSHEY_SIMPLEX, color=color)
         return image
 
-    def AddPatch(self, plt, ax, description=None, color = [0.0, 0.0, 0.0, 1.0]):
+    def AddPatch(self, plt, ax, description=None, color=list([0.0, 0.0, 0.0, 1.0])):
         # Create a Rectangle patch
         bbox = patches.Rectangle((self.x1, self.y1), self.width, self.height, linewidth=2,
                                  edgecolor=color,
