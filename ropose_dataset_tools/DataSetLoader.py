@@ -13,6 +13,15 @@ def GetDataSets(path: str):
 
     return dataDirs
 
+def LoadDir(path: str) -> List[type(Dataset)]:
+    dirs = GetDataSets(path)
+    datasets = []
+    for datasetDir in dirs:
+        organizer = DataOrganizer(dataPath=datasetDir)
+        datasets.extend(organizer.datasets)
+
+    return datasets
+
 def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool = True,
                  mixSimulationFactor: int = 0.5) -> List[type(Dataset)]:
 

@@ -1,7 +1,7 @@
 import os
 import simplejson as json
 from typing import List, Dict
-from ropose_dataset_tools.DataClasses.BaseTypes.Pose import Pose
+from guthoms_helpers.base_types.Pose3D import Pose3D
 from ropose_dataset_tools.DataClasses.Dataset.SensorBase import SensorBase
 from ropose_dataset_tools.DataClasses.Dataset.FrameTypes import FrameTypes
 from ropose_dataset_tools.DataClasses.Dataset.Dataset import Dataset
@@ -14,17 +14,13 @@ from ropose_dataset_tools.DataClasses.Dataset.Metadata import Metadata
 import ropose_dataset_tools.config as config
 
 class DataOrganizer:
-    dataPath: str = None
-    worldTransformPath: str = "world_transforms"
-    metadataPath: str = "metadata.json"
-    dirList: List[str] = None
-    datasets: List[type(Dataset)] = None
 
     def __init__(self, dataPath: str) -> None:
-        self.dataPath = dataPath
-        self.worldTransformPath = "world_transforms"
-        self.metadataPath = "metadata.json"
+        self.dataPath: str = dataPath
+        self.worldTransformPath: str = "world_transforms"
+        self.metadataPath: str = "metadata.json"
         self.dirList: List[str] = []
+        self.datasets: List[type(Dataset)] = None
 
         self.datasets = self.LoadData(dataPath)
         pass
@@ -127,7 +123,7 @@ class DataOrganizer:
         return datasets
 
     @staticmethod
-    def LoadSensorData(dataPath: str, cameraName: str, worldTransforms: List[Dict[str, type(Pose)]]) \
+    def LoadSensorData(dataPath: str, cameraName: str, worldTransforms: List[Dict[str, type(Pose3D)]]) \
             -> Dict[str, List[type(SensorBase)]]:
         dataDir = os.path.join(dataPath, cameraName)
         dirs = DataOrganizer.GetDirs(dataDir)
@@ -199,8 +195,8 @@ class DataOrganizer:
         return CameraInfo.fromJson(data)
 
     @staticmethod
-    def LoadImageData(dataDir: str, cameraName: str, worldTransforms:  List[Dict[str, type(Pose)]],
-                      transforms: List[Dict[str, type(Pose)]] = None) -> List[type(Image)]:
+    def LoadImageData(dataDir: str, cameraName: str, worldTransforms:  List[Dict[str, type(Pose3D)]],
+                      transforms: List[Dict[str, type(Pose3D)]] = None) -> List[type(Image)]:
 
         cameraInfo = DataOrganizer.LoadCameraInfo(dataDir)
 
@@ -219,8 +215,8 @@ class DataOrganizer:
         return imageData
 
     @staticmethod
-    def LoadSingleImageSet(dataPath: str, cameraInfo: type(CameraInfo), sensorPose: type(Pose),
-                           transforms:  Dict[str, type(Pose)] = None) -> type(Image):
+    def LoadSingleImageSet(dataPath: str, cameraInfo: type(CameraInfo), sensorPose: type(Pose3D),
+                           transforms:  Dict[str, type(Pose3D)] = None) -> type(Image):
         try:
             transforms = DataOrganizer.FilterTransforms(transforms)
         except:
@@ -229,8 +225,8 @@ class DataOrganizer:
         return Image(dataPath, cameraInfo, sensorPose, transforms)
 
     @staticmethod
-    def LoadDepthData(dataDir: str, cameraName: str, worldTransforms:  List[Dict[str, type(Pose)]],
-                      transforms: List[Dict[str, type(Pose)]] = None) -> List[type(DepthData)]:
+    def LoadDepthData(dataDir: str, cameraName: str, worldTransforms:  List[Dict[str, type(Pose3D)]],
+                      transforms: List[Dict[str, type(Pose3D)]] = None) -> List[type(DepthData)]:
 
         cameraInfo = DataOrganizer.LoadCameraInfo(dataDir)
 
@@ -246,33 +242,33 @@ class DataOrganizer:
         return depthData
 
     @staticmethod
-    def LoadSingleDepthSet(dataPath: str, cameraInfo: type(CameraInfo), sensorPose: type(Pose),
-                           transforms: List[type(Pose)] = None) -> type(DepthData):
+    def LoadSingleDepthSet(dataPath: str, cameraInfo: type(CameraInfo), sensorPose: type(Pose3D),
+                           transforms: List[type(Pose3D)] = None) -> type(DepthData):
         #sensorPose = transforms[cameraInfo.cameraName + "_link"]
         #transforms = DataOrganizer.FilterTransforms(transforms)
         return DepthData(sensorPose)
 
     @staticmethod
-    def LoadTransforms(dataDir: str) -> List[Dict[str, type(Pose)]]:
+    def LoadTransforms(dataDir: str) -> List[Dict[str, type(Pose3D)]]:
         files = DataOrganizer.GetFiles(dataPath=dataDir, endsWith=".json")
 
-        transforms = [Dict[str, type(Pose)]] * files.__len__()
+        transforms = [Dict[str, type(Pose3D)]] * files.__len__()
 
         for file in files:
             index = DataOrganizer.GetDatasetIndex(file)
             jsonData = DataOrganizer.LoadJson(file)
 
-            poses: Dict[str, type(Pose)] = dict()
+            poses: Dict[str, type(Pose3D)] = dict()
             for data in jsonData:
                 if data != "ros_time" and data != "redundant":
-                    poses[data] = Pose.fromDict(jsonData[data])
+                    poses[data] = Pose3D.fromDict(jsonData[data])
 
             transforms[index] = poses
 
         return transforms
 
     @staticmethod
-    def FilterTransforms(transforms: Dict[str, type(Pose)]) -> List[type(Pose)]:
+    def FilterTransforms(transforms: Dict[str, type(Pose3D)]) -> List[type(Pose3D)]:
         ret = []
 
         for joint in config.linkOrder:

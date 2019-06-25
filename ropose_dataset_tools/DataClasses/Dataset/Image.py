@@ -1,5 +1,7 @@
+
+from guthoms_helpers.base_types.Pose3D import Pose3D
+from guthoms_helpers.base_types.Pose2D import Pose2D
 from ropose_dataset_tools.DataClasses.Dataset.SensorBase import SensorBase
-from ropose_dataset_tools.DataClasses.BaseTypes.Pose import Pose
 from ropose_dataset_tools.DataClasses.Dataset.CameraInfo import CameraInfo
 from ropose_dataset_tools.DataClasses.Dataset.FrameTypes import FrameTypes
 from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
@@ -7,28 +9,20 @@ from typing import List, Tuple
 
 
 class Image(SensorBase):
-
-    filePath: str = None
-    cameraInfo: CameraInfo = None
-    projectedJoints: List[List[float]] = None
-    resizedReprojectedPoints: List[List[float]] = None
-    resizedReprojectedGT: List[List[float]] = None
-    transforms: List[Pose] = None
-    usedPadding: Tuple = None
-
-    boundingBox: BoundingBox = None
-    resizedBoundingBox: BoundingBox = None
-
-    def __init__(self, filePath: str, cameraInfo: CameraInfo=None, sensorPose: Pose = None,
-                 transforms: List[type(Pose)] = None):
+    def __init__(self, filePath: str, cameraInfo: CameraInfo=None, sensorPose: Pose3D = None,
+                 transforms: List[type(Pose3D)] = None):
         super().__init__(FrameTypes.Image, sensorPose=sensorPose)
 
-        self.filePath = filePath
-        self.cameraInfo = cameraInfo
-        self.resizedReprojectedPoints = []
-        self.resizedReprojectedGT = []
+        self.filePath: str = filePath
+        self.cameraInfo: CameraInfo = cameraInfo
+        self.resizedReprojectedPoints: List[Pose2D] = []
+        self.resizedReprojectedGT: List[Pose2D] = []
+        self.transforms: List[Pose3D] = transforms
+        self.usedPadding: Tuple = None
 
-        self.transforms = transforms
+        self.boundingBox: BoundingBox = None
+        self.resizedBoundingBox: BoundingBox = None
+
         if transforms is not None:
             self.SetProjections(transforms)
             self.SetBoundingBox()
@@ -36,7 +30,7 @@ class Image(SensorBase):
     def SetBoundingBox(self):
         self.boundingBox = BoundingBox.CreateBoundingBox(self.projectedJoints)
 
-    def SetProjections(self, transforms: List[Pose]):
+    def SetProjections(self, transforms: List[Pose3D]):
         self.projectedJoints = []
 
         for trans in transforms:
@@ -52,7 +46,12 @@ class Image(SensorBase):
             u = focalx * point3D[0] / point3D[2] + ox
             v = focaly * point3D[1] / point3D[2] + oy
 
-            self.projectedJoints.append([u[0], v[0]])
-            self.resizedReprojectedPoints.append([u[0], v[0]])
+            visible = True
+            if v > self.cameraInfo.height or u > self.cameraInfo.width:
+                u[0] = v[0] = -1
+                visible = False
+
+            self.projectedJoints.append(Pose2D.fromData(x=u[0], y=v[0], angle=0, visible=visible))
+            self.resizedReprojectedPoints.append(self.projectedJoints[-1])
 
 

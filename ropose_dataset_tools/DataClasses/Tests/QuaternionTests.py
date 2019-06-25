@@ -2,12 +2,12 @@ import unittest
 from unittest import TestCase
 import numpy as np
 from typing import List, Tuple
-from ropose_dataset_tools.DataClasses.BaseTypes.Rotation import Rotation
-from ropose_dataset_tools.DataClasses.BaseTypes.Quaternion import Quaternion
-from ropose_dataset_tools.DataClasses.BaseTypes.RotationMatrix import RotationMatrix
-from ropose_dataset_tools.DataClasses.BaseTypes.EulerAngles import EulerAngles
-from ropose_dataset_tools.DataClasses.BaseTypes.Vector3D import Vector3D
-from ropose_dataset_tools.DataClasses.BaseTypes.AxisAngles import AxisAngles
+from guthoms_helpers.base_types.Rotation import Rotation
+from guthoms_helpers.base_types.Quaternion import Quaternion
+from guthoms_helpers.base_types.RotationMatrix import RotationMatrix
+from guthoms_helpers.base_types.EulerAngles import EulerAngles
+from guthoms_helpers.base_types.Vector3D import Vector3D
+from guthoms_helpers.base_types.AxisAngles import AxisAngles
 from math import pow, sqrt
 class TestCollection(object):
 

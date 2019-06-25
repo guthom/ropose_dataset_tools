@@ -1,6 +1,6 @@
-from ropose_dataset_tools.DataClasses.BaseTypes.BaseType import BaseType
-from ropose_dataset_tools.DataClasses.BaseTypes.Pose import Pose
-from ropose_dataset_tools.DataClasses.BaseTypes.Vector2D import Vector2D
+from guthoms_helpers.base_types.BaseType import BaseType
+from guthoms_helpers.base_types.Pose import Pose
+from guthoms_helpers.base_types.Vector2D import Vector2D
 from typing import List, Dict
 import numpy as np
 
