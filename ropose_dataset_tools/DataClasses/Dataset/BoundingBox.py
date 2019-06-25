@@ -76,13 +76,15 @@ class BoundingBox(object):
         bb_height = max_y - min_y
 
         if expandBox:
-            bb_expand_width = 0.35 * bb_width
-            bb_expand_height = 0.35 * bb_height
+            bb_expand_width = 0.2 * bb_width
+            bb_expand_height = 0.2 * bb_height
 
-            min_x -= bb_expand_width
-            min_y -= bb_expand_height
-            max_x += bb_expand_width
-            max_y += bb_expand_height
+            bb_expand = max(bb_expand_height, bb_expand_width)
+
+            min_x -= bb_expand
+            min_y -= bb_expand
+            max_x += bb_expand
+            max_y += bb_expand
 
         min_x = min_x if min_x > 0 else 0
         min_y = min_y if min_y > 0 else 0
