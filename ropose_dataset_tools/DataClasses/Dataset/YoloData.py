@@ -3,18 +3,11 @@ from typing import List, Tuple, Dict
 import ropose_dataset_tools.config as config
 
 class YoloData(object):
-    boundingBoxes: List[BoundingBox] = None
-    resizedBoundingBoxes:  List[BoundingBox] = None
-    classIDs: List[int] = None
-    keypoints: List[List[float]] = None
-
-
     def __init__(self):
-        self.boundingBoxes = []
-        self.classIDs = []
-        self.resizedBoundingBoxes = []
-        self.keypoints = []
-
+        self.boundingBoxes: List[BoundingBox] = []
+        self.resizedBoundingBoxes: List[BoundingBox] = []
+        self.classIDs: List[int] = []
+        self.keypoints: List[List[float]] = []
 
     @classmethod
     def FromRopose(cls, dataset: 'Dataset'):

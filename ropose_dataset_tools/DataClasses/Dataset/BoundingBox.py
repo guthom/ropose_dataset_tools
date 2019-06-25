@@ -6,22 +6,18 @@ import matplotlib.patches as patches
 
 class BoundingBox(object):
 
-    x1: float = None
-    y1: float = None
-    x2: float = None
-    y2: float = None
-
-    width: float = None
-    height: float = None
-
-    midX: float = None
-    midY: float = None
-
     def __init__(self, x1: float, y1: float, x2: float, y2: float):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
+        self.x1: float = x1
+        self.y1: float = y1
+        self.x2: float = x2
+        self.y2: float = y2
+
+        self.width: float = None
+        self.height: float = None
+
+        self.midX: float = None
+        self.midY: float = None
+
         self.SetWidth()
         self.SetHeight()
         self.SetMidX()

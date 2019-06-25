@@ -1,4 +1,3 @@
-
 from guthoms_helpers.base_types.Pose3D import Pose3D
 from guthoms_helpers.base_types.Pose2D import Pose2D
 from ropose_dataset_tools.DataClasses.Dataset.SensorBase import SensorBase
@@ -22,6 +21,7 @@ class Image(SensorBase):
 
         self.boundingBox: BoundingBox = None
         self.resizedBoundingBox: BoundingBox = None
+        self.projectedJoints: List[Pose2D] = []
 
         if transforms is not None:
             self.SetProjections(transforms)
