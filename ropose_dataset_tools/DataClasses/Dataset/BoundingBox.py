@@ -140,6 +140,14 @@ class BoundingBox(object):
                           self._clip(self.x2, clipVal), self._clip(self.y2, clipVal))
         return ret
 
+    def ClipToShape(self, shape):
+        x1 = self._clip(self.x1, shape[0] - 1)
+        y1 = self._clip(self.y1, shape[1] - 1)
+        x2 = self._clip(self.x2, shape[0] - 1)
+        y2 = self._clip(self.y2, shape[1] - 1)
+
+        return BoundingBox(x1, y1, x2, y2)
+
     def _clip(self, value, clipVal):
         return max(0, min(value, clipVal))
 
