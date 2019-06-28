@@ -158,7 +158,13 @@ class BoundingBox(object):
                            self.x2 + (self.x2 / scale), self.y2 + (self.y2 / scale))
 
     def CropImage(self, image):
-        return np.array(image[int(self.y1):int(self.y2), int(self.x1):int(self.x2)])
+        #clip to image size
+        y1 = int(max(0.0, self.y1))
+        x1 = int(max(0.0, self.x1))
+        x2 = int(min(self.x2, image.shape[0]-1))
+        y2 = int(min(self.y2, image.shape[1]-1))
+
+        return np.array(image[y1:y2, x1:x2])
 
     def Draw(self, image, description=None, color=list([0.0, 0.0, 0.0])):
         p1 = (int(self.x1), int(self.y1))
@@ -186,15 +192,29 @@ class BoundingBox(object):
         return plt
 
     def Area(self):
-        return self.height * self.width
+        return int(self.height) * int(self.width)
 
     def CalculateOverlapp(self, target: "BoundingBox") -> float:
+
+
         x1 = max(self.x1, target.x1)
         y1 = max(self.y1, target.y1)
         x2 = min(self.x2, target.x2)
         y2 = min(self.y2, target.y2)
 
-        interArea = (x1-x2)*(y1-y2)
+        width = (x2 - x1)
+        height = (y2 - y1)
+        # handle case where there is NO overlap
+        if (width < 0) or (height < 0):
+            interArea = 0.0
+        else:
+            interArea = width * height
 
         return interArea
+
+    def CalculateIoU(self, target: "BoundingBox") -> float:
+        overlap = self.CalculateOverlapp(target)
+        union = self.Area() + target.Area() - overlap
+
+        return overlap/union
 

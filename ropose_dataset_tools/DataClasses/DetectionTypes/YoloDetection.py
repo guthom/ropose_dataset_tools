@@ -14,3 +14,7 @@ class YoloDetection(object):
                          int(prediction[2].item()), int(prediction[3].item()))
 
         return cls(bb, int(prediction[6].item()), prediction[4].item())
+
+    def Match(self, target: 'YoloDetection', minimumIoU: float = 0.5):
+        iou = self.boundingBox.CalculateIoU(target.boundingBox)
+        return iou >= minimumIoU and self.predictedClass == target.predictedClass

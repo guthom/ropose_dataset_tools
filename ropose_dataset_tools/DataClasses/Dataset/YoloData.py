@@ -1,4 +1,5 @@
 from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
+from ropose_dataset_tools.DataClasses.DetectionTypes.YoloDetection import YoloDetection
 from typing import List, Tuple, Dict
 import ropose_dataset_tools.config as config
 
@@ -50,6 +51,13 @@ class YoloData(object):
             x, y, w, h = annotation["bbox"]
             self.boundingBoxes.append(BoundingBox.FromList([x, y, x+w, y+h]))
 
+    def ToYoloDetections(self) -> List[YoloDetection]:
+        yoloDetections = []
+        for i in range(0, self.classIDs.__len__()):
+            yoloDetections.append(YoloDetection(boundingBox=self.boundingBoxes[i], predictedClass=self.classIDs[i],
+                                                confidence=1.0))
+
+        return  yoloDetections
 
 
 
