@@ -56,8 +56,9 @@ class Augmenter:
 
         elif objectType is 1:
             #circles/ellipses
-            rr, cc = ellipse(r=int(bb.midX), c=int(bb.midY), r_radius=int(bb.width/2), c_radius=int(bb.height/2),
-                             shape=img.shape, rotation=np.deg2rad(random.randint(0, 180)))
+            rr, cc = ellipse(r=int(bb.midX), c=int(bb.midY), r_radius=max(1, int(bb.width/2)),
+                             c_radius=max(1, int(bb.height/2)), shape=img.shape,
+                             rotation=np.deg2rad(random.randint(0, 180)))
 
             if randomNoise:
                 # create random numpy array
@@ -73,7 +74,7 @@ class Augmenter:
 
 
     @staticmethod
-    def AddRandomErasing(img: np.array, maxObjectCount: int = 10, coverRange: float = 0.2):
+    def AddRandomErasing(img: np.array, maxObjectCount: int = 10, coverRange: float = 0.3):
         #inspired by the idea of
         #https://arxiv.org/abs/1708.04896
         #https://github.com/zhunzhong07/Random-Erasing
@@ -84,8 +85,9 @@ class Augmenter:
         for i in range(0, objCount):
             area = random.uniform(0.1, coverRange)
 
-            heigth = int(img.shape[1] * area)
-            width = int(img.shape[0] * area)
+            #take care for a min height/width of 2 pixels
+            heigth = max(1, int(img.shape[1] * area))
+            width = max(1, int(img.shape[0] * area))
 
             midX = int(random.uniform(0, img.shape[1]))
             midY = int(random.uniform(0, img.shape[0]))
