@@ -188,11 +188,11 @@ class BoundingBox(object):
                            self.x2 + (self.x2 / scale), self.y2 + (self.y2 / scale))
 
     def CropImage(self, image):
-        #clip to image size
-        y1 = int(max(0.0, self.y1))
+        #crop
         x1 = int(max(0.0, self.x1))
-        x2 = int(min(self.x2, image.shape[0]-1))
-        y2 = int(min(self.y2, image.shape[1]-1))
+        y1 = int(max(0.0, self.y1))
+        x2 = int(min(self.x2, image.shape[1]-1))
+        y2 = int(min(self.y2, image.shape[0]-1))
 
         return np.array(image[y1:y2, x1:x2])
 
