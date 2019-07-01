@@ -6,6 +6,8 @@ basePath = os.path.realpath(__file__ + "/../")
 
 cocoPath = cocoPath = homedir + "/coco/"
 
+augmentationCval = 0.4980392156862745
+
 # RoposePose model stuff
 linkOrder = ["base_link",
             "shoulder_link",

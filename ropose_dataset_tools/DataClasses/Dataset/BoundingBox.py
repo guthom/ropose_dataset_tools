@@ -34,6 +34,15 @@ class BoundingBox(object):
             return self.y2
 
         raise Exception("Index not supported!")
+
+    @property
+    def P1(self):
+        return self.x1, self.y1
+
+    @property
+    def P2(self):
+        return self.x2, self.y2
+
     @classmethod
     def FromTwoPoints(cls, p1: List[float], p2: List[float]):
 
@@ -53,6 +62,19 @@ class BoundingBox(object):
 
         return cls(x1, y1, x2, y2)
 
+    @classmethod
+    def FromMidAndRange(cls, midX: float, midY: float, heigth: float, width: float):
+
+        height2 = heigth / 2
+        width2 = width / 2
+
+        x1 = midX - height2
+        y1 = midY - width2
+
+        x2 = midX + height2
+        y2 = midY + width2
+
+        return cls(x1, y1, x2, y2)
 
     @classmethod
     def CreateBoundingBox(cls, keyPoints: List[List[float]], expandBox= True, max_x_val: int = sys.maxsize, max_y_val: int = sys.maxsize):

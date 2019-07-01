@@ -6,8 +6,10 @@ from math import cos, sin, pi
 import copy
 import random
 import numpy as np
+import ropose_dataset_tools.config as config
 from skimage.transform import warp
-
+from skimage.util.noise import random_noise
+from skimage.draw import rectangle, ellipse, line, random_shapes
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
@@ -38,17 +40,76 @@ class Augmenter:
             self.augmentMethods.append(self.scale)
 
     @staticmethod
+    def EraseMask(img: np.array, bb: BoundingBox, randomNoise: bool = True):
+
+        objectType = random.randint(0, 1)
+
+        if objectType is 0:
+            #rectangles
+            rr, cc = rectangle(start=(int(bb.P1[0]), int(bb.P1[1])), end=(int(bb.P2[0]), int(bb.P2[1])))
+
+            if randomNoise:
+                # create random numpy array
+                img[rr, cc] = np.random.rand(rr.shape[0], rr.shape[1], 3)
+            else:
+                img[rr, cc] = config.augmentationCval
+
+        elif objectType is 1:
+            #circles/ellipses
+            rr, cc = ellipse(r=int(bb.midX), c=int(bb.midY), r_radius=int(bb.width/2), c_radius=int(bb.height/2),
+                             shape=img.shape, rotation=np.deg2rad(random.randint(0, 180)))
+
+            if randomNoise:
+                # create random numpy array
+                mask = np.random.rand(rr.shape[0], 3)
+                img[rr, cc] = mask
+            else:
+                img[rr, cc] = config.augmentationCval
+        else:
+            raise Exception("Not Implemented!")
+
+
+        return img
+
+
+    @staticmethod
+    def AddRandomErasing(img: np.array, maxObjectCount: int = 10, coverRange: float = 0.2):
+        #inspired by the idea of
+        #https://arxiv.org/abs/1708.04896
+        #https://github.com/zhunzhong07/Random-Erasing
+
+        objCount = int(random.uniform(1, maxObjectCount))
+
+        #create objects
+        for i in range(0, objCount):
+            area = random.uniform(0.1, coverRange)
+
+            heigth = int(img.shape[1] * area)
+            width = int(img.shape[0] * area)
+
+            midX = int(random.uniform(0, img.shape[1]))
+            midY = int(random.uniform(0, img.shape[0]))
+
+            #create fake bb to work with
+            bb = BoundingBox.FromMidAndRange(midX, midY, heigth, width)
+            bb = bb.ClipToShape(img.shape)
+
+            img = Augmenter.EraseMask(img, bb)
+
+        return img
+
+    @staticmethod
     def GetRandomValues(inputRes: Tuple[int, int], outputRes: Tuple[int, int] = None):
         AugCollection = dict()
 
         if outputRes is None:
             outputRes = inputRes
 
-
         AugCollection["flip"] = bool(random.getrandbits(1))
+        AugCollection["randomErasing"] = bool(random.getrandbits(1))
         AugCollection["scale"] = random.uniform(0.85, 1.15)
         AugCollection["rotation"] = random.uniform(-35.0, 35.0)
-        AugCollection["shear"] = [random.uniform(0, 0), random.uniform(0, 0)]
+        AugCollection["shear"] = [random.uniform(-0.1, -0.1), random.uniform(0.1, 0.1)]
         placing_inp = [random.randint(-25, 25), #x direction
                        random.randint(-25, 25)] #y direction
         AugCollection["placing_inp"] = placing_inp
@@ -136,10 +197,10 @@ class Augmenter:
                                     [0., 1., -outputRes[1] / 2],
                                     [0., 0., 1.]])
 
-        M_img = center2zero_inp.dot(rotate).dot(flip).dot(translation_inp).dot(zero2center_inp).dot(scale)
+        M_img = center2zero_inp.dot(shear).dot(rotate).dot(flip).dot(translation_inp).dot(zero2center_inp).dot(scale)
 
         if outputRes is not None:
-            M_gt = center2zero_gt.dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
+            M_gt = center2zero_gt.dot(shear).dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
         else:
             M_gt = None
 
@@ -148,7 +209,7 @@ class Augmenter:
     @staticmethod
     def AugmentImg(img, M_img):
 
-        img = warp(image=img, inverse_map=np.linalg.inv(M_img), cval=0.4980392156862745, mode="constant")
+        img = warp(image=img, inverse_map=np.linalg.inv(M_img), cval=config.augmentationCval, mode="constant")
 
         return img
 
