@@ -39,6 +39,9 @@ class Augmenter:
         if (scale):
             self.augmentMethods.append(self.scale)
 
+    def DecideByProb(self, prob: float = 0.5):
+        return np.random.rand(0, 1.0) < prob
+
     @staticmethod
     def EraseMask(img: np.array, bb: BoundingBox, randomNoise: bool = True):
 
@@ -74,29 +77,30 @@ class Augmenter:
 
 
     @staticmethod
-    def AddRandomErasing(img: np.array, maxObjectCount: int = 10, coverRange: float = 0.3):
+    def AddRandomErasing(img: np.array,  probabilty: float = 0.5, maxObjectCount: int = 10, coverRange: float = 0.3):
         #inspired by the idea of
         #https://arxiv.org/abs/1708.04896
         #https://github.com/zhunzhong07/Random-Erasing
 
-        objCount = int(random.uniform(1, maxObjectCount))
+        if Augmenter.DecideByProb(probabilty):
+            objCount = int(random.uniform(1, maxObjectCount))
 
-        #create objects
-        for i in range(0, objCount):
-            area = random.uniform(0.1, coverRange)
+            #create objects
+            for i in range(0, objCount):
+                area = random.uniform(0.1, coverRange)
 
-            #take care for a min height/width of 2 pixels
-            heigth = max(1, int(img.shape[1] * area))
-            width = max(1, int(img.shape[0] * area))
+                #take care for a min height/width of 2 pixels
+                heigth = max(1, int(img.shape[0] * area))
+                width = max(1, int(img.shape[1] * area))
 
-            midX = int(random.uniform(0, img.shape[1]))
-            midY = int(random.uniform(0, img.shape[0]))
+                midX = int(random.uniform(0, img.shape[0]))
+                midY = int(random.uniform(0, img.shape[1]))
 
-            #create fake bb to work with
-            bb = BoundingBox.FromMidAndRange(midX, midY, heigth, width)
-            bb = bb.ClipToShape(img.shape)
+                #create fake bb to work with
+                bb = BoundingBox.FromMidAndRange(midX, midY, heigth, width)
+                bb = bb.ClipToShape(img.shape)
 
-            img = Augmenter.EraseMask(img, bb)
+                img = Augmenter.EraseMask(img, bb)
 
         return img
 
