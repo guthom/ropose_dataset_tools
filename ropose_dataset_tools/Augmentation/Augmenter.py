@@ -40,7 +40,7 @@ class Augmenter:
             self.augmentMethods.append(self.scale)
 
     def DecideByProb(self, prob: float = 0.5):
-        return np.random.rand(0, 1.0) < prob
+        return random.random() < prob
 
     @staticmethod
     def EraseMask(img: np.array, bb: BoundingBox, randomNoise: bool = True):
