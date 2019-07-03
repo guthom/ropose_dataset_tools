@@ -112,7 +112,7 @@ class Augmenter:
             outputRes = inputRes
 
         AugCollection["flip"] = bool(random.getrandbits(1))
-        AugCollection["randomErasing"] = bool(random.getrandbits(1))
+        AugCollection["randomErasing"] = True
         AugCollection["scale"] = random.uniform(0.85, 1.15)
         AugCollection["rotation"] = random.uniform(-35.0, 35.0)
         AugCollection["shear"] = [random.uniform(-0.1, -0.1), random.uniform(0.1, 0.1)]
@@ -203,10 +203,10 @@ class Augmenter:
                                     [0., 1., -outputRes[1] / 2],
                                     [0., 0., 1.]])
 
-        M_img = center2zero_inp.dot(shear).dot(rotate).dot(flip).dot(translation_inp).dot(zero2center_inp).dot(scale)
+        M_img = center2zero_inp.dot(rotate).dot(flip).dot(translation_inp).dot(zero2center_inp).dot(scale)
 
         if outputRes is not None:
-            M_gt = center2zero_gt.dot(shear).dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
+            M_gt = center2zero_gt.dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
         else:
             M_gt = None
 
