@@ -90,7 +90,7 @@ class DataOrganizer:
 
         dataDirs = self.GetDirs(dataPath)
 
-        worldTransforms = self.LoadTransforms(dataPath + self.worldTransformPath)
+        worldTransforms = self.LoadTransforms(os.path.join(dataPath, self.worldTransformPath))
         #remobe the world transform path, rest should be cameras
         dataDirs.remove(self.worldTransformPath)
 
