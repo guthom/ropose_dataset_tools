@@ -5,6 +5,8 @@ homedir = os.environ['HOME']
 basePath = os.path.realpath(__file__ + "/../")
 
 cocoPath = cocoPath = homedir + "/coco/"
+#roposeSimulatedDatasetPath = "/mnt/datastuff/Datasets/sim/ropose_simdata_10K/"
+roposeSimulatedDatasetPath = os.path.join(homedir + "/ropose/Datasets/sim/ropose_simdata_10K/")# path on server
 
 augmentationCval = 0.4980392156862745
 
