@@ -18,6 +18,12 @@ class YoloData(object):
         ret.keypoints.append(dataset.rgbFrame.resizedReprojectedPoints)
         return ret
 
+    def Extend(self, other: 'YoloData'):
+        self.boundingBoxes.extend(other.boundingBoxes)
+        self.resizedBoundingBoxes.extend(other.resizedBoundingBoxes)
+        self.classIDs.extend(other.classIDs)
+        self.keypoints.extend(other.keypoints)
+
     @classmethod
     def FromCoco(cls, annotations):
         ret = cls()
