@@ -221,11 +221,26 @@ class BoundingBox(object):
 
         return plt
 
+    def DrawImageInBoundingBox(self, image: np.array, heatmaps: np.array, alpha=0.5) -> np.array:
+        img = image
+        try:
+
+            img[int(self.y1):int(self.y1) + heatmaps.shape[0], int(self.x1):int(self.x1) + heatmaps.shape[1], :] = \
+                cv2.addWeighted(image[int(self.y1):int(self.y1) + heatmaps.shape[0],
+                   int(self.x1):int(self.x1) + heatmaps.shape[1],
+                   :], 1.0 - alpha, heatmaps, alpha, 0)
+        except:
+            img = image
+
+        return img
+
+    def ResizeImageToBoundingBox(self, image: np.array) -> np.array:
+        return cv2.resize(image, dsize=(int(self.width), int(self.height)))
+
     def Area(self):
         return int(self.height) * int(self.width)
 
     def CalculateOverlapp(self, target: "BoundingBox") -> float:
-
 
         x1 = max(self.x1, target.x1)
         y1 = max(self.y1, target.y1)

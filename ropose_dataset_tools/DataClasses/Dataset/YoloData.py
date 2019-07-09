@@ -10,6 +10,9 @@ class YoloData(object):
         self.classIDs: List[int] = []
         self.keypoints: List[List[float]] = []
 
+    def __len__(self):
+        return len(self.classIDs)
+
     @classmethod
     def FromRopose(cls, dataset: 'Dataset'):
         ret = cls()
