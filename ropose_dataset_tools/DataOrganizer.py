@@ -78,7 +78,7 @@ class DataOrganizer:
 
         rawData = self.LoadJson(filePath)
 
-        metaData = Metadata(rawData["simulated"], rawData["greenscreened"])
+        metaData = Metadata(rawData["simulated"], rawData["greenscreened"], rawData["robotType"])
 
         return metaData
 

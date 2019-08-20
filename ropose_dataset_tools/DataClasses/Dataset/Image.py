@@ -1,10 +1,11 @@
 from guthoms_helpers.base_types.Pose3D import Pose3D
 from guthoms_helpers.base_types.Pose2D import Pose2D
+import numpy as np
 from ropose_dataset_tools.DataClasses.Dataset.SensorBase import SensorBase
 from ropose_dataset_tools.DataClasses.Dataset.CameraInfo import CameraInfo
 from ropose_dataset_tools.DataClasses.Dataset.FrameTypes import FrameTypes
 from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 
 class Image(SensorBase):

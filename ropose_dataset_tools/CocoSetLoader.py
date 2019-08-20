@@ -33,7 +33,7 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
     datasets: List[type(Dataset)] = []
     zeroDatasets: List[type(Dataset)] = []
 
-    metadata = Metadata(False, False)
+    metadata = Metadata(False, False, "Unknown")
     #hack coco to RoPose datasets and use our backend afterwards
     for id in imageIDs:
         annIds = coco.getAnnIds(imgIds=id, catIds=catIds, iscrowd=None)
@@ -93,7 +93,7 @@ def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017")  -> Lis
 
     datasets: List[type(Dataset)] = []
 
-    metadata = Metadata(False, False)
+    metadata = Metadata(False, False, "Unknown")
     #hack coco to RoPose datasets and use our backend afterwards
 
 
@@ -129,7 +129,7 @@ def LoadCocoSetHumansYolo(cocoPath, cocoDataset="train2017") -> List[type(Datase
 
     datasets: List[type(Dataset)] = []
 
-    metadata = Metadata(False, False)
+    metadata = Metadata(False, False, "Unknown")
     #hack coco to RoPose datasets and use our backend afterwards
     for id in imageIDs:
         annIds = coco.getAnnIds(imgIds=id, iscrowd=None)

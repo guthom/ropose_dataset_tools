@@ -2,6 +2,7 @@ from ropose_dataset_tools.DataClasses.Dataset.Image import Image
 from guthoms_helpers.base_types.Pose3D import Pose3D
 from ropose_dataset_tools.DataClasses.Dataset.Metadata import Metadata
 from ropose_dataset_tools.DataClasses.Dataset.YoloData import YoloData
+from typing import Optional
 import numpy as np
 from typing import List
 
@@ -22,6 +23,9 @@ class Dataset:
     def Clear(self):
         self.backgroundMask = None
         self.backgroundHeatmap = None
+
+    def GetBackgroundMaskURDF(self) -> Optional[np.array]:
+        return None
 
 
 
