@@ -8,6 +8,7 @@ cocoPath = cocoPath = homedir + "/coco/"
 #roposeSimulatedDatasetPath = "/mnt/datastuff/Datasets/sim/ropose_simdata_10K/"
 roposeSimulatedDatasetPath = os.path.join(homedir + "/ropose/Datasets/sim/ropose_simdata_10K/")# path on server
 
+useURDFForBackground = False
 urDescriptionBackgroundPath = "/home/thomas/ROS/ros_ws/src/universal_robot/ur_description"
 
 augmentationCval = 0.4980392156862745
