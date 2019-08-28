@@ -162,6 +162,11 @@ class BoundingBox(object):
                           self._clip(self.x2, clipVal), self._clip(self.y2, clipVal))
         return ret
 
+    def ClipMin(self, clipVal=0.0):
+        ret = BoundingBox(self._clipMin(self.x1, clipVal), self._clipMin(self.y1, clipVal),
+                          self._clipMin(self.x2, clipVal), self._clipMin(self.y2, clipVal))
+        return ret
+
     def ClipToShape(self, shape):
         x1 = self._clip(self.x1, shape[0] - 1)
         y1 = self._clip(self.y1, shape[1] - 1)
@@ -173,6 +178,8 @@ class BoundingBox(object):
     def _clip(self, value, clipVal):
         return max(0, min(value, clipVal))
 
+    def _clipMin(self, value, clipVal):
+        return max(0, max(value, clipVal))
 
     def AddPadding(self, padX = 0.0, padY = 0.0):
         return BoundingBox(self.x1 + padX, self.y1 + padY,  self.x2 + padX, self.y2 + padY)
