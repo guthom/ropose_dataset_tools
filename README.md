@@ -14,6 +14,7 @@ This includes:
 * Pycocotools
 * scikit-image
 * simplejson
+* sklearn
 
 ## Installing (Source)
 Clone the needed repositories to your virtual environment and install requirements:
@@ -52,13 +53,13 @@ This work uses parts from:
 * **MatplotLib** https://matplotlib.org/
 * **pycocotools** http://cocodataset.org
 * **skimage** https://scikit-image.org/
+* **sklearn** https://scikit-learn.org/stable/
 * **
-
 **Thanks to ALL the people who contributed to the projects!**
 
 ## Authors
 
-* **Thomas Gulde** - Main Author
+* **Thomas Gulde**
 
 Cognitive Systems Research Group, Reutlingen-University:
 https://cogsys.reutlingen-university.de/
