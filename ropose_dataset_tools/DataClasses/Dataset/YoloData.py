@@ -1,4 +1,6 @@
-from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
+from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
+from guthoms_helpers.base_types.Pose2D import Pose2D
+from guthoms_helpers.common_stuff.Timer import Timer
 from ropose_dataset_tools.DataClasses.DetectionTypes.YoloDetection import YoloDetection
 from typing import List, Tuple, Dict
 import ropose_dataset_tools.config as config
@@ -46,10 +48,10 @@ class YoloData(object):
                 rawKeypoints = annotation["keypoints"]
                 subKeypoints = []
                 for i in range(0, rawKeypoints.__len__(), 3):
-                    keypoint = [rawKeypoints[i], rawKeypoints[i + 1]]
+                    keypoint = Pose2D.fromData(rawKeypoints[i], rawKeypoints[i + 1], angle=0.0, visible=True)
 
                     if keypoint[0] == 0 and keypoint[1] == 0:
-                        keypoint = [-1, -1]
+                        keypoint.visible = False
 
                     subKeypoints.append(keypoint)
 

@@ -1,7 +1,8 @@
 from __future__ import print_function, division
 from typing import Tuple
 from ropose_dataset_tools.DataClasses.Dataset.Dataset import Dataset
-from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
+
+from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
 from math import cos, sin, pi
 import copy
 import random

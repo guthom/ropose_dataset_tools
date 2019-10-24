@@ -1,5 +1,4 @@
 from typing import List
-from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
 
 class KeypointDetection(object):
 

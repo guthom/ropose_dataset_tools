@@ -29,9 +29,7 @@ class Dataset:
     def GetBackgroundMaskURDF(self) -> Optional[np.array]:
 
         #TODO Allow backgorund generation with CAD Data!
-
-        if not config.useURDFForBackground:
-            return None
+        raise Exception("Not Implemented!")
 
         if not DirectoryHelper.DirExists(config.urDescriptionBackgroundPath):
             raise Exception("CAD-Data etc for the robot does not exist!")

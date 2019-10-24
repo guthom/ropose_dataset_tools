@@ -1,11 +1,12 @@
 import os
-from typing import List
+from typing import List, Optional
 from ropose_dataset_tools.DataClasses.Dataset.Dataset import Dataset
 from ropose_dataset_tools.DataClasses.Dataset.YoloData import YoloData
-from ropose_dataset_tools.DataClasses.Dataset.BoundingBox import BoundingBox
+from guthoms_helpers.base_types.Pose2D import Pose2D
+from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
 from ropose_dataset_tools.DataClasses.Dataset.Image import Image
 from ropose_dataset_tools.DataClasses.Dataset.Metadata import Metadata
-
+from guthoms_helpers.common_stuff.ProgressBar import ProgressBar
 from pycocotools.coco import COCO
 import ropose_dataset_tools.config as config
 
@@ -20,7 +21,7 @@ def GetDataSets(path: str):
     return dataDirs
 
 def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
-                 mixWithZeroHuamnsFactor=0.1) -> List[type(Dataset)]:
+                 mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None) -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/person_keypoints_{}.json'.format(dataDir, dataType)
@@ -29,13 +30,15 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
 
     catIds = coco.getCatIds(catNms=['person'])
     imageIDs = coco.getImgIds(catIds=catIds)
+    if amount is not None:
+        imageIDs = imageIDs[:amount]
 
     datasets: List[type(Dataset)] = []
     zeroDatasets: List[type(Dataset)] = []
 
     metadata = Metadata(False, False, "Unknown")
     #hack coco to RoPose datasets and use our backend afterwards
-    for id in imageIDs:
+    for id in  ProgressBar(imageIDs):
         annIds = coco.getAnnIds(imgIds=id, catIds=catIds, iscrowd=None)
 
         img = coco.loadImgs(id)[0]
@@ -51,10 +54,10 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
             keypoints = []
             unvalidCounter = 0
             for i in range(0, rawKeypoints.__len__(), 3):
-                keypoint = [rawKeypoints[i], rawKeypoints[i+1]]
+                keypoint = Pose2D.fromData(rawKeypoints[i], rawKeypoints[i+1], 0.0, visible=True)
 
                 if keypoint[0] == 0 and keypoint[1] == 0:
-                    keypoint = [-1, -1]
+                    keypoint.visible = False
                     unvalidCounter += 1
 
                 keypoints.append(keypoint)
@@ -97,7 +100,7 @@ def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017")  -> Lis
     #hack coco to RoPose datasets and use our backend afterwards
 
 
-    for id in imageIDs:
+    for id in  ProgressBar(imageIDs):
         annIds = coco.getAnnIds(imgIds=id, iscrowd=None)
 
         img = coco.loadImgs(id)[0]
@@ -131,7 +134,7 @@ def LoadCocoSetHumansYolo(cocoPath, cocoDataset="train2017") -> List[type(Datase
 
     metadata = Metadata(False, False, "Unknown")
     #hack coco to RoPose datasets and use our backend afterwards
-    for id in imageIDs:
+    for id in ProgressBar(imageIDs):
         annIds = coco.getAnnIds(imgIds=id, iscrowd=None)
 
         img = coco.loadImgs(id)[0]
