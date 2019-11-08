@@ -4,6 +4,7 @@ from ropose_dataset_tools.DataClasses.Dataset.Dataset import Dataset
 from ropose_dataset_tools.DataClasses.Dataset.YoloData import YoloData
 from guthoms_helpers.base_types.Pose2D import Pose2D
 from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
+from guthoms_helpers.base_types.Vector2D import Vector2D
 from ropose_dataset_tools.DataClasses.Dataset.Image import Image
 from ropose_dataset_tools.DataClasses.Dataset.Metadata import Metadata
 from guthoms_helpers.common_stuff.ProgressBar import ProgressBar
@@ -65,8 +66,8 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
             # generate Bounding Box
             rawBB = ann["bbox"]
 
-            rgbFrame.boundingBox = BoundingBox.FromList([int(rawBB[0]), int(rawBB[1]), int(rawBB[0] + rawBB[2]),
-                                                         int(rawBB[1] + rawBB[3])])
+            rgbFrame.boundingBox = BoundingBox(Vector2D(int(rawBB[0]), int(rawBB[1])),
+                                               Vector2D(int(rawBB[0] + rawBB[2]), int(rawBB[1] + rawBB[3])))
 
 
             dataset.annotations = ann
