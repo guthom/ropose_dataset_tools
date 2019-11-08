@@ -1,4 +1,5 @@
 from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
+from guthoms_helpers.base_types.Vector2D import Vector2D
 
 class YoloDetection(object):
 
@@ -9,8 +10,9 @@ class YoloDetection(object):
 
     @classmethod
     def FromPredictionTensor(cls, prediction):
-        bb = BoundingBox(int(prediction[0].item()), int(prediction[1].item()),
-                         int(prediction[2].item()), int(prediction[3].item()))
+        vec1 = Vector2D(int(prediction[0].item()), int(prediction[1].item()))
+        vec2 = Vector2D(int(prediction[2].item()), int(prediction[3].item()))
+        bb = BoundingBox.FromTwoPoints(vec1, vec2)
 
         return cls(bb, int(prediction[6].item()), prediction[4].item())
 

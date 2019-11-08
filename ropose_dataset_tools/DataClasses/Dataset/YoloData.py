@@ -1,5 +1,6 @@
 from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
 from guthoms_helpers.base_types.Pose2D import Pose2D
+from guthoms_helpers.base_types.Vector2D import Vector2D
 from guthoms_helpers.common_stuff.Timer import Timer
 from ropose_dataset_tools.DataClasses.DetectionTypes.YoloDetection import YoloDetection
 from typing import List, Tuple, Dict
@@ -60,7 +61,7 @@ class YoloData(object):
     def CreateBoundingBoxesFromCoco(self, annotations: Dict):
         for annotation in annotations:
             x, y, w, h = annotation["bbox"]
-            self.boundingBoxes.append(BoundingBox.FromList([x, y, x+w, y+h]))
+            self.boundingBoxes.append(BoundingBox(Vector2D(x, y), Vector2D(x+w, y+h)))
 
     def ToYoloDetections(self) -> List[YoloDetection]:
         yoloDetections = []

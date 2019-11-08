@@ -3,6 +3,7 @@ from typing import Tuple
 from ropose_dataset_tools.DataClasses.Dataset.Dataset import Dataset
 
 from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
+from guthoms_helpers.base_types.Vector2D import Vector2D
 from math import cos, sin, pi
 import copy
 import random
@@ -98,7 +99,7 @@ class Augmenter:
                 midY = int(random.uniform(0, img.shape[1]))
 
                 #create fake bb to work with
-                bb = BoundingBox.FromMidAndRange(midX, midY, heigth, width)
+                bb = BoundingBox.FromMidAndRange(Vector2D(midX, midY), Vector2D(heigth, width))
                 bb = bb.ClipToShape(img.shape)
 
                 img = Augmenter.EraseMask(img, bb)
