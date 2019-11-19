@@ -153,12 +153,12 @@ class Augmenter:
             outputRes = augCollection["outputRes"]
 
 
-        center2zero_inp = np.array([[1., 0., inputRes[0]/2],
-                                [0., 1., inputRes[1]/2],
+        center2zero_inp = np.array([[1., 0., inputRes[1]/2],
+                                [0., 1., inputRes[0]/2],
                                 [0., 0., 1.]])
 
-        center2zero_gt = np.array([[1., 0., outputRes[0]/2],
-                                [0., 1., outputRes[1]/2],
+        center2zero_gt = np.array([[1., 0., outputRes[1]/2],
+                                [0., 1., outputRes[0]/2],
                                 [0., 0., 1.]])
 
         translation_inp = np.array([[1., 0., augCollection["placing_inp"][0]],
@@ -186,7 +186,7 @@ class Augmenter:
         ])
 
         flip = np.array([
-            [-1 if augCollection["flip"] else 1., 0., 0.],
+            [-1. if augCollection["flip"] else 1., 0., 0.],
             [0., 1., 0.],
             [0., 0., 1.]
         ])
@@ -197,18 +197,19 @@ class Augmenter:
             [0., 0., 1.]
         ])
 
-        zero2center_inp = np.array([[1., 0., -inputRes[0] / 2],
-                                    [0., 1., -inputRes[1] / 2],
+        zero2center_inp = np.array([[1., 0., -inputRes[1]/2],
+                                    [0., 1., -inputRes[0]/2],
                                     [0., 0., 1.]])
 
-        zero2center_gt = np.array([[1., 0., -outputRes[0] / 2],
-                                    [0., 1., -outputRes[1] / 2],
-                                    [0., 0., 1.]])
 
-        M_img = center2zero_inp.dot(rotate).dot(flip).dot(translation_inp).dot(zero2center_inp).dot(scale)
+        zero2center_gt = np.array([[1., 0., -outputRes[1]/2],
+                                   [0., 1., -outputRes[0]/2],
+                                   [0., 0., 1.]])
+
+        M_img = center2zero_inp.dot(flip).dot(scale).dot(shear).dot(rotate).dot(translation_inp).dot(zero2center_inp)
 
         if outputRes is not None:
-            M_gt = center2zero_gt.dot(rotate).dot(flip).dot(translation_gt).dot(zero2center_gt).dot(scale)
+            M_gt = center2zero_gt.dot(flip).dot(scale).dot(shear).dot(rotate).dot(translation_gt).dot(zero2center_gt)
         else:
             M_gt = None
 
