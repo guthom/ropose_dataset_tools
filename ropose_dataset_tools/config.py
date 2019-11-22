@@ -11,7 +11,8 @@ roposeSimulatedDatasetPath = os.path.join(homedir + "/ropose/Datasets/sim/ropose
 useURDFForBackground = False
 urDescriptionBackgroundPath = "/home/thomas/ROS/ros_ws/src/universal_robot/ur_description"
 
-augmentationCval = 0.4980392156862745
+#augmentationCval = 0.4980392156862745
+augmentationCval = 0.0
 
 # RoposePose model stuff
 linkOrder = ["base_link",

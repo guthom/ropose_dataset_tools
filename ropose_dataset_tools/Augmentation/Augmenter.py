@@ -42,7 +42,7 @@ class Augmenter:
             self.augmentMethods.append(self.scale)
 
     def DecideByProb(self, prob: float = 0.5):
-        return random.random() < prob
+        return random.random() <= prob
 
     @staticmethod
     def EraseMask(img: np.array, bb: BoundingBox, randomNoise: bool = True):
@@ -243,13 +243,13 @@ class Augmenter:
         return dataset
 
     @staticmethod
-    def AugmentHeatmaps(heatmaps, M_gt):
+    def AugmentHeatmaps(heatmaps, M_gt, heatmapMin=0.0, heatmapMax=1.0):
 
         for j in range(0, heatmaps.shape[0] - 1):
-            heatmaps[j] = warp(image=heatmaps[j], inverse_map=np.linalg.inv(M_gt), cval=0.0, mode="constant")
+            heatmaps[j] = warp(image=heatmaps[j], inverse_map=np.linalg.inv(M_gt), cval=heatmapMin, mode="constant")
 
         # Background need constant = 1.0
-        heatmaps[-1] = warp(image=heatmaps[-1], inverse_map=np.linalg.inv(M_gt), cval=1.0, mode="constant")
+        heatmaps[-1] = warp(image=heatmaps[-1], inverse_map=np.linalg.inv(M_gt), cval=heatmapMax, mode="constant")
 
         return heatmaps
 
