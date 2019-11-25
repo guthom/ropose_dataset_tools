@@ -30,7 +30,8 @@ class Image(SensorBase):
             self.SetBoundingBox()
 
     def SetBoundingBox(self):
-        self.boundingBox = BoundingBox.CreateBoundingBox(self.projectedJoints)
+        self.boundingBox = BoundingBox.CreateBoundingBox(self.projectedJoints, expandBox=True, expandRatio=0.2)
+        self.boundingBox = self.boundingBox.ClipToShape((self.cameraInfo.width, self.cameraInfo.height))
 
     def SetProjections(self, transforms: List[Pose3D]):
         self.projectedJoints = []

@@ -243,6 +243,23 @@ class Augmenter:
         return dataset
 
     @staticmethod
+    def AugmentBoundingBox(boundingBox: BoundingBox, M_img) -> BoundingBox:
+
+        mat = M_img
+
+        edges = boundingBox.GetEdgePoints()
+
+        transEdgeList = []
+        for j in range(0, edges.__len__()):
+            edge = np.array([edges[j][0], edges[j][1], 1])
+            edge = np.matmul(mat, edge)
+            transEdgeList.append([edge[0], edge[1]])
+
+        boundingBox = BoundingBox.CreateBoundingBox(transEdgeList, expandBox=False)
+        return boundingBox
+
+
+    @staticmethod
     def AugmentHeatmaps(heatmaps, M_gt, heatmapMin=0.0, heatmapMax=1.0):
 
         for j in range(0, heatmaps.shape[0] - 1):
