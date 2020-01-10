@@ -216,28 +216,18 @@ class Augmenter:
         return M_img, M_gt
 
     @staticmethod
-    def AugmentImg(img, M_img):
+    def AugmentImg(img, M_img, cval=config.augmentationCval):
 
-        img = warp(image=img, inverse_map=np.linalg.inv(M_img), cval=config.augmentationCval, mode="constant")
+        img = warp(image=img, inverse_map=np.linalg.inv(M_img), cval=cval, mode="constant")
 
         return img
 
     @staticmethod
     def AugmentYoloData(dataset: Dataset, M_img):
 
-        mat = M_img
-
         for i in range(0, dataset.yoloData.resizedBoundingBoxes.__len__()):
             boundingBox = dataset.yoloData.resizedBoundingBoxes[i]
-            edges = boundingBox.GetEdgePoints()
-
-            transEdgeList = []
-            for j in range(0, edges.__len__()):
-                edge = np.array([edges[j][0], edges[j][1], 1])
-                edge = np.matmul(mat, edge)
-                transEdgeList.append([edge[0], edge[1]])
-
-            boundingBox = BoundingBox.CreateBoundingBox(transEdgeList, expandBox=False)
+            boundingBox = Augmenter.AugmentBoundingBox(boundingBox, M_img)
             dataset.yoloData.resizedBoundingBoxes[i] = boundingBox
 
         return dataset
@@ -253,7 +243,7 @@ class Augmenter:
         for j in range(0, edges.__len__()):
             edge = np.array([edges[j][0], edges[j][1], 1])
             edge = np.matmul(mat, edge)
-            transEdgeList.append([edge[0], edge[1]])
+            transEdgeList.append(Vector2D(edge[0], edge[1]))
 
         boundingBox = BoundingBox.CreateBoundingBox(transEdgeList, expandBox=False)
         return boundingBox

@@ -18,7 +18,7 @@ class YoloDetection(object):
 
         return cls(bb, int(prediction[6].item()), prediction[4].item())
 
-    def ToPredictionTensor(self, confidence: float = 1.0, image: Optional[np.array] = None):
+    def ToPredictionTensor(self, confidence: float = 0.0, image: Optional[np.array] = None):
         #yolo bounding box is normed with imge dimensions (range 0 - 1.0)
         if image is not None:
             bb = self.boundingBox.NormWithImage(image)

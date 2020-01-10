@@ -41,7 +41,7 @@ class YoloData(object):
     def ExtractClassIDs(self, annotations: Dict):
         for annotation in annotations:
             if "category_id" in annotation:
-                self.classIDs.append(config.yolo_cocoClassMap[annotation["category_id"]])
+                self.classIDs.append(config.yoloClassMap[annotation["category_id"]])
 
     def ExtractKeypointsFromAnotations(self, annotations: Dict):
         for annotation in annotations:

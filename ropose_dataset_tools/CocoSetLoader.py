@@ -119,10 +119,9 @@ def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017")  -> Lis
         dataset.rgbFrame = rgbFrame
         datasets.append(dataset)
 
-
     return datasets
 
-def LoadCocoSetHumansYolo(cocoPath, cocoDataset="train2017") -> List[type(Dataset)]:
+def LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017") -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/person_keypoints_{}.json'.format(dataDir, dataType)

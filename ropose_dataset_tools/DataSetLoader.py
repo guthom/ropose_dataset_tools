@@ -27,14 +27,12 @@ def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool 
 
     dataSets_Real = GetDataSets(realSetPath)
 
-
     roposData: List[type(DataOrganizer)] = []
     datasets: List[type(Dataset)] = []
 
     for datasetDir in dataSets_Real:
         roposData.append(DataOrganizer(dataPath=datasetDir))
         datasets.extend(roposData[-1].datasets)
-
 
     if simulatedPath is not None:
         dataSets_Sim = GetDataSets(simulatedPath)

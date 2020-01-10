@@ -22,7 +22,6 @@ linkOrder = ["base_link",
             "wrist_1_link",
             "wrist_2_link",
             "wrist_3_link"]
-
 coco_classes = {0: {'supercategory': 'unknown', 'id': 0, 'name': 'unknown'},
                 1: {'supercategory': 'person', 'id': 1, 'name': 'person'},
                 2: {'supercategory': 'vehicle', 'id': 2, 'name': 'bicycle'},
@@ -190,6 +189,21 @@ yolo_cocoClassMap = {
                 100: 80,
 }
 
-yolo_Classes = coco_classes
+
+tinyYoloClasses = {
+    0: {'supercategory': 'unknown', 'id': 0, 'name': 'unknown'},
+    1: {'supercategory': 'person', 'id': 1, 'name': 'person'},
+    2: {'supercategory': 'robot', 'id': 2, 'name': 'robot'}
+}
+
+tinyYoloClassMap = {1: 0,
+                    2: 1}
+
+#yolo_Classes = coco_classes
+yolo_Classes = tinyYoloClasses
+#yoloClassMap = yolo_cocoClassMap
+yoloClassMap = tinyYoloClassMap
 yolo_HumanClassNum = 0
-yolo_RoposeClassNum = 80
+#class 80 when we use yolo with ALL classes
+#yolo_RoposeClassNum = 80
+yolo_RoposeClassNum = 1
