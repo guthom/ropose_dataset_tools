@@ -22,7 +22,8 @@ def GetDataSets(path: str):
     return dataDirs
 
 def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
-                 mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None) -> List[type(Dataset)]:
+                 mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None, setSize: Optional[int]=None) \
+        -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/person_keypoints_{}.json'.format(dataDir, dataType)
@@ -80,13 +81,17 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
             else:
                 zeroDatasets.append(dataset)
 
+        #break if setsize reached
+        if setSize is not None and datasets.__len__() >= setSize:
+            break
+
     if mixWithZeroHumans:
         amount = int(mixWithZeroHuamnsFactor * len(datasets))
         datasets.extend(zeroDatasets[0:amount])
 
     return datasets
 
-def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017")  -> List[type(Dataset)]:
+def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None)  -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/instances_{}.json'.format(dataDir, dataType)
@@ -119,9 +124,13 @@ def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017")  -> Lis
         dataset.rgbFrame = rgbFrame
         datasets.append(dataset)
 
+        # break if setsize reached
+        if setSize is not None and datasets.__len__() >= setSize:
+            break
+
     return datasets
 
-def LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017") -> List[type(Dataset)]:
+def LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None) -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/person_keypoints_{}.json'.format(dataDir, dataType)
@@ -151,5 +160,9 @@ def LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017") -
 
         dataset.rgbFrame = rgbFrame
         datasets.append(dataset)
+
+        # break if setsize reached
+        if setSize is not None and datasets.__len__() >= setSize:
+            break
 
     return datasets
