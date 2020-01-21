@@ -91,6 +91,34 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
 
     return datasets
 
+def LoadCocoSetsOnlyImages(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
+                 mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None, setSize: Optional[int]=None) \
+        -> List[type(Dataset)]:
+    dataDir = cocoPath
+    dataType = cocoDataset
+    annoFile = '{}/annotations/instances_{}.json'.format(dataDir, dataType)
+    coco = COCO(annoFile)
+    imageIDs = coco.getImgIds()
+    datasets: List[type(Dataset)] = []
+    metadata = Metadata(False, False, "Unknown")
+    # hack coco to RoPose datasets and use our backend afterwards
+    #hack coco to RoPose datasets and use our backend afterwards
+    for id in ProgressBar(imageIDs):
+        img = coco.loadImgs(id)[0]
+        dataset = Dataset()
+        dataset.metadata = metadata
+        imagePath = os.path.join(dataDir, "images", dataType, img['file_name'])
+        rgbFrame = Image(filePath=imagePath)
+        dataset.rgbFrame = rgbFrame
+        #generate keypoints
+
+        datasets.append(dataset)
+        #break if setsize reached
+        if setSize is not None and datasets.__len__() >= setSize:
+            break
+
+    return datasets
+
 def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None)  -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
