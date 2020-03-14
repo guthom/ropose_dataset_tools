@@ -16,7 +16,7 @@ class YoloDetection(object):
         vec2 = Vector2D(int(prediction[2].item()), int(prediction[3].item()))
         bb = BoundingBox.FromTwoPoints(vec1, vec2)
 
-        return cls(bb, int(prediction[6].item()), prediction[4].item())
+        return cls(bb, int(prediction[5].item()), prediction[4].item())
 
     def ToPredictionTensor(self, confidence: float = 0.0, image: Optional[np.array] = None):
         #yolo bounding box is normed with imge dimensions (range 0 - 1.0)

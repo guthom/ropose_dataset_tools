@@ -80,6 +80,8 @@ class Augmenter:
 
     @staticmethod
     def AddRandomErasing(img: np.array,  probabilty: float = 0.5, maxObjectCount: int = 10, coverRange: float = 0.3):
+
+        raise Exception("Not yet tested!")
         #inspired by the idea of
         #https://arxiv.org/abs/1708.04896
         #https://github.com/zhunzhong07/Random-Erasing
