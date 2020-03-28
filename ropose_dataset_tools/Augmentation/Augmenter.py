@@ -118,7 +118,7 @@ class Augmenter:
         AugCollection["flip"] = bool(random.getrandbits(1))
         AugCollection["randomErasing"] = True
         AugCollection["scale"] = random.uniform(0.85, 1.15)
-        AugCollection["rotation"] = random.uniform(-35.0, 35.0)
+        AugCollection["rotation"] = random.uniform(-180.0, 180.0)
         AugCollection["shear"] = [random.uniform(-0.1, -0.1), random.uniform(0.1, 0.1)]
         placing_inp = [random.randint(-25, 25), #x direction
                        random.randint(-25, 25)] #y direction
