@@ -146,6 +146,8 @@ class DataOrganizer:
 
         for dir in dirs:
             frameType = DataOrganizer.PredictDirContent(os.path.join(dataDir, dir))
+            if dir.__contains__("labels"):
+                continue
 
             if frameType is FrameTypes.Image:
                 frames = DataOrganizer.LoadImageData(os.path.join(dataDir, dir), cameraName,

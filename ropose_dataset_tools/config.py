@@ -13,6 +13,7 @@ urDescriptionBackgroundPath = "/home/thomas/ROS/ros_ws/src/universal_robot/ur_de
 
 #augmentationCval = 0.4980392156862745
 augmentationCval = 0.0
+onTheFlyAugmentationProbability = 0.7
 
 # RoposePose model stuff
 linkOrder = ["base_link",

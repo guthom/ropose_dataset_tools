@@ -19,6 +19,7 @@ except ImportError:
 
 class Augmenter:
 
+    counter = 0
     def __init__(self, flip=True, rotate=True, tranform=True, scale=True):
         self.augmentMethods = []
 
@@ -41,7 +42,8 @@ class Augmenter:
         if (scale):
             self.augmentMethods.append(self.scale)
 
-    def DecideByProb(self, prob: float = 0.5):
+    @staticmethod
+    def DecideByProb(prob: float = 0.5):
         return random.random() <= prob
 
     @staticmethod
@@ -78,6 +80,7 @@ class Augmenter:
         return img
 
 
+
     @staticmethod
     def AddRandomErasing(img: np.array,  probabilty: float = 0.5, maxObjectCount: int = 10, coverRange: float = 0.3):
 
@@ -109,11 +112,37 @@ class Augmenter:
         return img
 
     @staticmethod
+    def GetNoneManipulativeValues(inputRes: Tuple[int, int], outputRes: Tuple[int, int] = None):
+        AugCollection = dict()
+
+        if outputRes is None:
+            outputRes = inputRes
+
+        AugCollection["flip"] = False
+        AugCollection["randomErasing"] = False
+        AugCollection["scale"] = 1.0
+        AugCollection["rotation"] = 0.0
+        AugCollection["shear"] = [0.0, 0.0]
+        placing_inp = [0.0,  0.0]  # y direction
+        AugCollection["placing_inp"] = placing_inp
+        AugCollection["inputRes"] = inputRes
+
+        gtFactor = [inputRes[0] / outputRes[0], inputRes[1] / outputRes[1]]
+        AugCollection["placing_gt"] = [placing_inp[0] / gtFactor[0], placing_inp[1] / gtFactor[1]]
+        AugCollection["outputRes"] = outputRes
+
+        return AugCollection
+
+    @staticmethod
     def GetRandomValues(inputRes: Tuple[int, int], outputRes: Tuple[int, int] = None):
         AugCollection = dict()
 
         if outputRes is None:
             outputRes = inputRes
+
+        if not Augmenter.DecideByProb(config.onTheFlyAugmentationProbability):
+            #augmentation will not be applied every time
+            return Augmenter.GetNoneManipulativeValues(inputRes, outputRes)
 
         AugCollection["flip"] = bool(random.getrandbits(1))
         AugCollection["randomErasing"] = True
