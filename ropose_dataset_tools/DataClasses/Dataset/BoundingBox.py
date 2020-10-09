@@ -4,6 +4,8 @@ import numpy as np
 import cv2
 import matplotlib.patches as patches
 
+import imgaug as ia
+
 class BoundingBox(object):
 
     def __init__(self, x1: float, y1: float, x2: float, y2: float):
@@ -38,6 +40,13 @@ class BoundingBox(object):
     @property
     def P1(self):
         return self.x1, self.y1
+
+    def ToIaaBoundingBox(self) -> ia.BoundingBox:
+        return ia.BoundingBox(x1=self.x1, y1=self.y1, x2=self.x2, y2=self.y2)
+
+    @classmethod
+    def FromIaaBB(self, iaaBB: ia.BoundingBox):
+        return BoundingBox(x1=iaaBB.x1, y1=iaaBB.y1, x2=iaaBB.x2, y2=iaaBB.y2)
 
     @property
     def P2(self):
