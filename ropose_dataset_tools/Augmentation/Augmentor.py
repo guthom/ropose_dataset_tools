@@ -21,12 +21,13 @@ class Augmentor(object):
         padmode = 'constant'
         cval = config.augmentationCval
 
+        pipe = []
         # Flipping
-        self.pipeline.append(iaa.Fliplr(0.5))
-        self.pipeline.append(iaa.Flipud(0.5))
+        pipe.append(iaa.Fliplr(0.5))
+        pipe.append(iaa.Flipud(0.5))
 
         # Affine transformation
-        self.pipeline.append(
+        pipe.append(
             self.Sometimes(iaa.Affine(
             scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
             rotate=(-180, 180), shear=(-16, 16), order=1, cval=cval, mode=padmode)
@@ -34,7 +35,7 @@ class Augmentor(object):
         )
 
         # Noise Augmentation
-        self.pipeline.append(
+        pipe.append(
             self.Sometimes(
                 iaa.SomeOf((1, 2), [
                     iaa.OneOf([
@@ -50,7 +51,7 @@ class Augmentor(object):
         )
 
         # Color Channel Augmentation
-        self.pipeline.append(
+        pipe.append(
             self.Sometimes(
                 iaa.OneOf([
                     iaa.MultiplyHueAndSaturation((0.5, 1.5), per_channel=True),
@@ -59,7 +60,8 @@ class Augmentor(object):
         )
 
 
-        self.pipeline.append(self.Sometimes(iaa.CropAndPad(percent=(-0.15, 0.15), pad_mode=padmode, pad_cval=cval)))
+        pipe.append(self.Sometimes(iaa.CropAndPad(percent=(-0.15, 0.15), pad_mode=padmode, pad_cval=cval)))
+        self.pipeline.append(iaa.Sometimes(0.5, pipe))
 
 
     def AugmentImagesAndHeatmaps(self, x: np.array, y: np.array) -> Tuple[np.array, np.array]:
