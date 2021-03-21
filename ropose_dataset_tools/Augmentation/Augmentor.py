@@ -1,4 +1,5 @@
 from typing import Optional, Tuple, List
+from typing import Callable, Optional, List
 import imgaug as ia
 import imgaug.augmenters as iaa
 import numpy as np
@@ -11,28 +12,54 @@ class Augmentor(object):
 
         self.DefineSeq()
 
+    def Sometimes(self, func: Callable, prob: float = 0.75) -> Callable:
+        return iaa.Sometimes(prob, func)
+
     def DefineSeq(self):
         self.pipeline = iaa.Sequential()
+
         padmode = 'constant'
         cval = config.augmentationCval
-        #flipping
+
+        # Flipping
         self.pipeline.append(iaa.Fliplr(0.5))
         self.pipeline.append(iaa.Flipud(0.5))
 
-        self.pipeline.append(iaa.Sometimes(0.95, iaa.CropAndPad(percent=(-0.25, 0.25), pad_mode=padmode,
-                                                                pad_cval=cval)))
-
+        # Affine transformation
         self.pipeline.append(
-            iaa.Sometimes(0.95,
-            iaa.Affine(
-            scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},  # scale images to 80-120% of their size, individually per axis
-            translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},  # translate by -20 to +20 percent (per axis)
-            rotate=(-180, 180),  # rotate by -45 to +45 degrees
-            shear=(-16, 16),  # shear by -16 to +16 degrees
-            order=[0, 1],  # use nearest neighbour or bilinear interpolation (fast)
-            cval=cval,  # if mode is constant, use a cval between 0 and 255
-            mode=padmode  # use any of scikit-image's warping modes (see 2nd image from the top for examples
-        )))
+            self.Sometimes(iaa.Affine(
+            scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
+            rotate=(-180, 180), shear=(-16, 16), order=1, cval=cval, mode=padmode)
+            )
+        )
+
+        # Noise Augmentation
+        self.pipeline.append(
+            self.Sometimes(
+                iaa.SomeOf((1, 2), [
+                    iaa.OneOf([
+                        iaa.GaussianBlur((0, 3.0)),
+                        iaa.AverageBlur(k=(2, 7)),
+                        iaa.MedianBlur(k=(3, 11))
+                    ]),
+                    iaa.OneOf([
+                        iaa.SaltAndPepper(0.1, per_channel=True),
+                        iaa.imgcorruptlike.Spatter(severity=2)
+                    ]),
+                ]))
+        )
+
+        # Color Channel Augmentation
+        self.pipeline.append(
+            self.Sometimes(
+                iaa.OneOf([
+                    iaa.MultiplyHueAndSaturation((0.5, 1.5), per_channel=True),
+                    iaa.ChangeColorTemperature((1100, 10000))
+                ]),)
+        )
+
+
+        self.pipeline.append(self.Sometimes(iaa.CropAndPad(percent=(-0.15, 0.15), pad_mode=padmode, pad_cval=cval)))
 
 
     def AugmentImagesAndHeatmaps(self, x: np.array, y: np.array) -> Tuple[np.array, np.array]:

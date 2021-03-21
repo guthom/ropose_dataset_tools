@@ -52,7 +52,7 @@ class Augmenter:
 
         objectType = random.randint(0, 1)
 
-        if objectType is 0:
+        if objectType == 0:
             #rectangles
             rr, cc = rectangle(start=(int(bb.P1[0]), int(bb.P1[1])), end=(int(bb.P2[0]), int(bb.P2[1])))
 
@@ -62,7 +62,7 @@ class Augmenter:
             else:
                 img[rr, cc] = config.augmentationCval
 
-        elif objectType is 1:
+        elif objectType == 1:
             #circles/ellipses
             rr, cc = ellipse(r=int(bb.midX), c=int(bb.midY), r_radius=max(1, int(bb.width/2)),
                              c_radius=max(1, int(bb.height/2)), shape=img.shape,
