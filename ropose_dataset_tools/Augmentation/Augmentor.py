@@ -39,9 +39,9 @@ class Augmentor(object):
             self.Sometimes(
                 iaa.SomeOf((1, 2), [
                     iaa.OneOf([
-                        iaa.GaussianBlur((0, 3.0)),
-                        iaa.AverageBlur(k=(2, 7)),
-                        iaa.MedianBlur(k=(3, 11))
+                        iaa.GaussianBlur((0, 1.0)),
+                        iaa.AverageBlur(k=(2, 5)),
+                        iaa.MedianBlur(k=(3, 5))
                     ]),
                     iaa.OneOf([
                         iaa.SaltAndPepper(0.1, per_channel=True),
@@ -51,25 +51,47 @@ class Augmentor(object):
         )
 
         # Color Channel Augmentation
-        pipe.append(
-            self.Sometimes(
-                iaa.OneOf([
-                    iaa.MultiplyHueAndSaturation((0.5, 1.5), per_channel=True),
-                    iaa.ChangeColorTemperature((1100, 10000))
-                ]),)
-        )
+        #pipe.append(
+        #    self.Sometimes(
+        #        iaa.OneOf([
+        #            iaa.MultiplyHueAndSaturation((0.8, 1.2), per_channel=True),
+        #            iaa.ChangeColorTemperature((1100, 10000))
+        #        ]), prob=0.25)
+        #)
 
 
-        pipe.append(self.Sometimes(iaa.CropAndPad(percent=(-0.15, 0.15), pad_mode=padmode, pad_cval=cval)))
-        self.pipeline.append(iaa.Sometimes(0.5, pipe))
+        #pipe.append(self.Sometimes(iaa.CropAndPad(percent=(-0.15, 0.15), pad_mode=padmode, pad_cval=cval)))
+        self.pipeline.append(iaa.Sometimes(0.75, pipe))
 
 
     def AugmentImagesAndHeatmaps(self, x: np.array, y: np.array) -> Tuple[np.array, np.array]:
+        expanded = False
+        if len(x.shape) == 3:
+            expanded = True
+            x = np.expand_dims(x, axis=0)
+            y = np.expand_dims(y, axis=0)
+
         x, y = self.pipeline(images=x, heatmaps=y)
-        return x, y
+
+        if expanded:
+            x = np.squeeze(x, axis=0)
+            y = np.squeeze(y, axis=0)
+
+            return x, y
 
     def AugmentImagesAndBBs(self, x: np.array, y: List[ia.BoundingBox]) -> Tuple[np.array, np.array]:
+        expanded = False
+        if len(x.shape) == 3:
+            expanded = True
+            x = np.expand_dims(x, axis=0)
+            y = np.expand_dims(y, axis=0)
+
         x, y = self.pipeline(images=x, bounding_boxes=y)
+
+        if expanded:
+            x = np.squeeze(x, axis=0)
+            y = np.squeeze(y, axis=0)
+
         return x, y
 
     def ShowExample(self, image: np.array):

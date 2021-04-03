@@ -9,6 +9,7 @@ from ropose_dataset_tools.DataClasses.Dataset.Image import Image
 from ropose_dataset_tools.DataClasses.Dataset.Metadata import Metadata
 from guthoms_helpers.common_stuff.ProgressBar import ProgressBar
 from pycocotools.coco import COCO
+from copy import deepcopy
 import ropose_dataset_tools.config as config
 
 def GetDataSets(path: str):
@@ -21,7 +22,17 @@ def GetDataSets(path: str):
 
     return dataDirs
 
-def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
+def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset=config.cocoDatasetTrain, mixWithZeroHumans=False,
+                 mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None, setSize: Optional[int]=None) \
+    -> List[type(Dataset)]:
+    ret = []
+
+    for dataset in cocoDataset:
+        ret.extend(_LoadCocoSets(cocoPath, dataset, mixWithZeroHumans, mixWithZeroHuamnsFactor, amount, setSize))
+
+    return ret
+
+def _LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
                  mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None, setSize: Optional[int]=None) \
         -> List[type(Dataset)]:
     dataDir = cocoPath
@@ -30,18 +41,24 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
 
     coco = COCO(annoFile)
 
-    catIds = coco.getCatIds(catNms=['person'])
-    imageIDs = coco.getImgIds(catIds=catIds)
+    personIds = coco.getCatIds(catNms=['person'])
+    tempIds = deepcopy(config.coco_catIDs)
+    tempIds.remove('person')
+    otherIds = coco.getCatIds(catNms=tempIds)
+
+    personImageIDs = coco.getImgIds(catIds=personIds)
+    otherImageIDs = coco.getImgIds(catIds=otherIds)
+
     if amount is not None:
-        imageIDs = imageIDs[:amount]
+        personImageIDs = personImageIDs[:amount]
 
     datasets: List[type(Dataset)] = []
     zeroDatasets: List[type(Dataset)] = []
 
     metadata = Metadata(False, False, "Unknown")
     #hack coco to RoPose datasets and use our backend afterwards
-    for id in  ProgressBar(imageIDs):
-        annIds = coco.getAnnIds(imgIds=id, catIds=catIds, iscrowd=None)
+    for id in ProgressBar(personImageIDs):
+        annIds = coco.getAnnIds(imgIds=id, catIds=personIds, iscrowd=None)
 
         img = coco.loadImgs(id)[0]
         anns = coco.loadAnns(annIds)
@@ -87,11 +104,36 @@ def LoadCocoSets(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZer
 
     if mixWithZeroHumans:
         amount = int(mixWithZeroHuamnsFactor * len(datasets))
-        datasets.extend(zeroDatasets[0:amount])
+        # clip to max len of image ids
+        amount = max(amount, len(otherImageIDs))
+
+        for i in range(0, amount):
+            id = otherImageIDs[i]
+            img = coco.loadImgs(id)[0]
+            annIds = coco.getAnnIds(imgIds=id, catIds=otherImageIDs, iscrowd=None)
+            anns = coco.loadAnns(annIds)
+
+            dataset = Dataset()
+            dataset.metadata = metadata
+            imagePath = os.path.join(dataDir, "images", dataType, img['file_name'])
+            dataset.rgbFrame = Image(filePath=imagePath)
+            dataset.annotations = anns
+            datasets.extend(zeroDatasets[0:amount])
 
     return datasets
 
-def LoadCocoSetsOnlyImages(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
+def LoadCocoSetsOnlyImages(cocoPath = config.cocoPath, cocoDataset=["train2017"], mixWithZeroHumans=False,
+                 mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None, setSize: Optional[int]=None) \
+    -> List[type(Dataset)]:
+    ret = []
+
+    for dataset in cocoDataset:
+        ret.extend(_LoadCocoSetsOnlyImages(cocoPath, dataset, mixWithZeroHumans, mixWithZeroHuamnsFactor, amount,
+                                           setSize))
+
+    return ret
+
+def _LoadCocoSetsOnlyImages(cocoPath = config.cocoPath, cocoDataset="train2017", mixWithZeroHumans=False,
                  mixWithZeroHuamnsFactor=0.1, amount: Optional[int]=None, setSize: Optional[int]=None) \
         -> List[type(Dataset)]:
     dataDir = cocoPath
@@ -119,7 +161,17 @@ def LoadCocoSetsOnlyImages(cocoPath = config.cocoPath, cocoDataset="train2017", 
 
     return datasets
 
-def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None)  -> List[type(Dataset)]:
+def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None) \
+        -> List[type(Dataset)]:
+    ret = []
+
+    for dataset in cocoDataset:
+        ret.extend(_LoadCocoSetYolo(cocoPath, dataset, setSize))
+
+    return ret
+
+def _LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None)  \
+        -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/instances_{}.json'.format(dataDir, dataType)
@@ -158,7 +210,17 @@ def LoadCocoSetYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSiz
 
     return datasets
 
-def LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None) -> List[type(Dataset)]:
+def LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None) \
+        -> List[type(Dataset)]:
+    ret = []
+
+    for dataset in cocoDataset:
+        ret.extend(_LoadCocoSetHumansYolo(cocoPath, dataset, setSize))
+
+    return ret
+
+def _LoadCocoSetHumansYolo(cocoPath = config.cocoPath, cocoDataset="train2017",  setSize: Optional[int]=None) \
+        -> List[type(Dataset)]:
     dataDir = cocoPath
     dataType = cocoDataset
     annoFile = '{}/annotations/person_keypoints_{}.json'.format(dataDir, dataType)
