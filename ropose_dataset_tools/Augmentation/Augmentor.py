@@ -101,7 +101,7 @@ class Augmentor(object):
             x = np.expand_dims(x, axis=0)
             y = np.expand_dims(y, axis=0)
 
-        x, y = self.pipeline(images=x, bounding_boxes=y)
+        x, y = self.pipeline.augment(images=x, bounding_boxes=y)
 
         if expanded:
             x = np.squeeze(x, axis=0)
