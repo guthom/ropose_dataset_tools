@@ -5,6 +5,10 @@ import imgaug.augmenters as iaa
 import numpy as np
 import ropose_dataset_tools.config as config
 
+
+from imgaug.augmentables.batches import UnnormalizedBatch, Batch
+
+
 class Augmentor(object):
 
     def __init__(self):
@@ -70,11 +74,22 @@ class Augmentor(object):
             expanded = True
             x = np.expand_dims(x, axis=0)
             y = np.expand_dims(y, axis=0)
+            # transpose to satisfy imgaugs expectations
+            y = y.transpose((0, 2, 3, 1))
 
-        x, y = self.pipeline(images=x, heatmaps=y)
+        #batch = UnnormalizedBatch(images=x, heatmaps=y)
+        #augmented = self.pipeline.augment_batches(batch)
+
+        #for part in augmented:
+        #    x = part.images_aug
+        #    y = part.heatmaps_aug
+
+        x, y = self.pipeline.augment(images=x, heatmaps=y)
 
         if expanded:
             x = np.squeeze(x, axis=0)
+            # transpose back to satisfy our expectations
+            y = y.transpose((0, 3, 1, 2))
             y = np.squeeze(y, axis=0)
 
             return x, y
