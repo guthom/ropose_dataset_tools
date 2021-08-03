@@ -33,12 +33,13 @@ class Augmentor(object):
         # Affine transformation
         pipe.append(
             self.Sometimes(iaa.Affine(
-            scale={"x": (0.8, 1.2), "y": (0.8, 1.2)}, translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
-            rotate=(-180, 180), shear=(-16, 16), order=1, cval=cval, mode=padmode)
+            scale={"x": (0.9, 1.1), "y": (0.9, 1.1)}, translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
+            rotate=(-180, 180), shear={"x": (-5, 5), "y": (-5, 5)}, order=1, cval=cval, mode=padmode)
             )
         )
 
         # Noise Augmentation
+        '''
         pipe.append(
             self.Sometimes(
                 iaa.SomeOf((1, 2), [
@@ -53,7 +54,7 @@ class Augmentor(object):
                     ]),
                 ]))
         )
-
+        '''
         # Color Channel Augmentation
         #pipe.append(
         #    self.Sometimes(
