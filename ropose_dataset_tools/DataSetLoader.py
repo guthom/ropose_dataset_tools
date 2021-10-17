@@ -52,6 +52,17 @@ def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool 
 def LoadDataSet(path: str) -> List[type(Dataset)]:
     return DataOrganizer(dataPath=path).datasets
 
+def LoadDataSetsForFinetuning(paths: List[str], includeNones:bool = False) -> List[type(Dataset)]:
+    ret = []
+
+    for dir in paths:
+        #append none to reset tracker
+        if includeNones:
+            ret.append(None)
+        ret.extend(LoadDataSet(dir))
+
+    return ret
+
 
 def FindImages(path: str)-> List[str]:
     images = []

@@ -16,7 +16,7 @@ class Augmentor(object):
 
         self.DefineSeq()
 
-    def Sometimes(self, func: Callable, prob: float = 0.75) -> Callable:
+    def Sometimes(self, func: Callable, prob: float = 0.50) -> Callable:
         return iaa.Sometimes(prob, func)
 
     def DefineSeq(self):
@@ -27,14 +27,14 @@ class Augmentor(object):
 
         pipe = []
         # Flipping
-        pipe.append(iaa.Fliplr(0.5))
-        pipe.append(iaa.Flipud(0.5))
+        #pipe.append(iaa.Fliplr(0.5))
+        #pipe.append(iaa.Flipud(0.5))
 
         # Affine transformation
         pipe.append(
             self.Sometimes(iaa.Affine(
             scale={"x": (0.9, 1.1), "y": (0.9, 1.1)}, translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
-            rotate=(-180, 180), shear={"x": (-5, 5), "y": (-5, 5)}, order=1, cval=cval, mode=padmode)
+            rotate=(-180, 180), shear={"x": (-2, 2), "y": (-2, 2)}, order=1, cval=cval, mode=padmode)
             )
         )
 
@@ -100,13 +100,13 @@ class Augmentor(object):
         if len(x.shape) == 3:
             expanded = True
             x = np.expand_dims(x, axis=0)
-            y = np.expand_dims(y, axis=0)
+            #y = np.expand_dims(y, axis=0)
 
         x, y = self.pipeline.augment(images=x, bounding_boxes=y)
 
         if expanded:
             x = np.squeeze(x, axis=0)
-            y = np.squeeze(y, axis=0)
+            #y = np.squeeze(y, axis=0)
 
         return x, y
 
