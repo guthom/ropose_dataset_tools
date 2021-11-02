@@ -13,6 +13,7 @@ class Augmentor(object):
 
     def __init__(self):
         self.pipeline: Optional[iaa.Sequential] = None
+        self.pipeline100: Optional[iaa.Sequential] = None
 
         self.DefineSeq()
 
@@ -27,46 +28,33 @@ class Augmentor(object):
 
         pipe = []
         # Flipping
-        #pipe.append(iaa.Fliplr(0.5))
-        #pipe.append(iaa.Flipud(0.5))
+        pipe.append(iaa.Fliplr(0.5))
+        pipe.append(iaa.Flipud(0.5))
 
         # Affine transformation
         pipe.append(
             self.Sometimes(iaa.Affine(
-            scale={"x": (0.9, 1.1), "y": (0.9, 1.1)}, translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)},
-            rotate=(-180, 180), shear={"x": (-2, 2), "y": (-2, 2)}, order=1, cval=cval, mode=padmode)
+                scale={"x": (0.9, 1.1), "y": (0.9, 1.1)}, rotate=(-180, 180),
+                #translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)}, shear={"x": (-2, 2), "y": (-2, 2)},
+                order=1, cval=cval, mode=padmode)
             )
         )
+        self.pipeline.extend(pipe)
 
-        # Noise Augmentation
-        '''
-        pipe.append(
-            self.Sometimes(
-                iaa.SomeOf((1, 2), [
-                    iaa.OneOf([
-                        iaa.GaussianBlur((0, 1.0)),
-                        iaa.AverageBlur(k=(2, 5)),
-                        iaa.MedianBlur(k=(3, 5))
-                    ]),
-                    iaa.OneOf([
-                        iaa.SaltAndPepper(0.1, per_channel=True),
-                        iaa.imgcorruptlike.Spatter(severity=2)
-                    ]),
-                ]))
-        )
-        '''
-        # Color Channel Augmentation
-        #pipe.append(
-        #    self.Sometimes(
-        #        iaa.OneOf([
-        #            iaa.MultiplyHueAndSaturation((0.8, 1.2), per_channel=True),
-        #            iaa.ChangeColorTemperature((1100, 10000))
-        #        ]), prob=0.25)
-        #)
+        pipe100 = []
+        self.pipeline100 = iaa.Sequential()
+        # Flipping
+        pipe100.append(iaa.Fliplr(0.5))
+        pipe100.append(iaa.Flipud(0.5))
 
+        # Affine transformation
+        pipe100.append(iaa.Affine(
+                scale={"x": (0.9, 1.1), "y": (0.9, 1.1)}, rotate=(-180, 180),
+                #translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)}, shear={"x": (-2, 2), "y": (-2, 2)},
+                order=1, cval=cval, mode=padmode)
+            )
+        self.pipeline100.extend(pipe100)
 
-        #pipe.append(self.Sometimes(iaa.CropAndPad(percent=(-0.15, 0.15), pad_mode=padmode, pad_cval=cval)))
-        self.pipeline.append(iaa.Sometimes(0.75, pipe))
 
 
     def AugmentImagesAndHeatmaps(self, x: np.array, y: np.array) -> Tuple[np.array, np.array]:
@@ -95,14 +83,17 @@ class Augmentor(object):
 
             return x, y
 
-    def AugmentImagesAndBBs(self, x: np.array, y: List[ia.BoundingBox]) -> Tuple[np.array, np.array]:
+    def AugmentImagesAndBBs(self, x: np.array, y: List[ia.BoundingBox], forceAugmentation: bool = False) -> Tuple[np.array, np.array]:
         expanded = False
         if len(x.shape) == 3:
             expanded = True
             x = np.expand_dims(x, axis=0)
             #y = np.expand_dims(y, axis=0)
 
-        x, y = self.pipeline.augment(images=x, bounding_boxes=y)
+        if forceAugmentation:
+            x, y = self.pipeline.augment(images=x, bounding_boxes=y)
+        else:
+            x, y = self.pipeline100.augment(images=x, bounding_boxes=y)
 
         if expanded:
             x = np.squeeze(x, axis=0)

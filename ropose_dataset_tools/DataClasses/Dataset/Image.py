@@ -4,6 +4,7 @@ import numpy as np
 from ropose_dataset_tools.DataClasses.Dataset.SensorBase import SensorBase
 from ropose_dataset_tools.DataClasses.Dataset.CameraInfo import CameraInfo
 from ropose_dataset_tools.DataClasses.Dataset.FrameTypes import FrameTypes
+from guthoms_helpers.filesystem.FileHelper import FileHelper
 
 from guthoms_helpers.base_types.BoundingBox2D import BoundingBox2D as BoundingBox
 from typing import List, Tuple, Optional
@@ -19,15 +20,17 @@ class Image(SensorBase):
         self.resizedReprojectedPoints: List[Pose2D] = []
         self.resizedReprojectedGT: List[Pose2D] = []
         self.transforms: List[Pose3D] = transforms
-        self.usedPadding: Tuple = None
+        self.usedPadding: Optional[Tuple] = None
+        self.imageSize = FileHelper.GetImageSize(filePath)
 
-        self.boundingBox: BoundingBox = None
-        self.resizedBoundingBox: BoundingBox = None
+        self.boundingBox: Optional[BoundingBox] = None
+        self.resizedBoundingBox: Optional[BoundingBox] = None
         self.projectedJoints: List[Pose2D] = []
 
         if transforms is not None:
             self.SetProjections(transforms)
             self.SetBoundingBox()
+
 
     def SetBoundingBox(self):
         self.boundingBox = BoundingBox.CreateBoundingBox(self.projectedJoints, expandBox=True, expandRatio=0.2)
