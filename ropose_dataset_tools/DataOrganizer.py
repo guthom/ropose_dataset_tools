@@ -84,7 +84,7 @@ class DataOrganizer:
 
 
     def LoadDataset(self, dataPath: str) -> List[type(Dataset)]:
-        datasets: List[Dataset] = []
+        datasets: List[List[Dataset]] = []
 
         metaData = self.LoadMetadata(dataPath)
 
@@ -97,15 +97,18 @@ class DataOrganizer:
         #rest of dirs are sensor data directories
         sensorData: Dict[str, List[SensorBase]] = dict()
 
+        singelDatasets = {}
         for sensorDir in dataDirs:
             sensorData[sensorDir] = self.LoadSensorData(dataPath, sensorDir, worldTransforms)
+            singelDatasets[sensorDir] = []
+
 
         #fill final Datasets
         for i in range(0, worldTransforms.__len__()):
             for sensor in sensorData:
                 dataset = Dataset()
+                #if exception will happen, just ignore the dataset
                 try:
-                    #if exception will happen, just ignore the dataset
                     dataset.worldTransforms = DataOrganizer.FilterTransforms(worldTransforms[i])
                     for frame in sensorData[sensor]:
                         singleData = sensorData[sensor][frame][i]
@@ -116,9 +119,12 @@ class DataOrganizer:
 
                     dataset.metadata = metaData
                     dataset.yoloData = YoloData.FromRopose(dataset)
-                    datasets.append(dataset)
+                    singelDatasets[sensor].append(dataset)
                 except:
                     pass
+
+        for sensor in sensorData:
+            datasets.append(singelDatasets[sensor])
 
         return datasets
 

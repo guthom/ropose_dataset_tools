@@ -23,7 +23,7 @@ def LoadDir(path: str) -> List[type(Dataset)]:
     return datasets
 
 def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool = True,
-                 mixSimulationFactor: int = 0.5) -> List[type(Dataset)]:
+                 mixSimulationFactor: int = 0.5, asSingleList: bool=True) -> List[type(Dataset)]:
 
     dataSets_Real = GetDataSets(realSetPath)
 
@@ -32,7 +32,12 @@ def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool 
 
     for datasetDir in dataSets_Real:
         roposData.append(DataOrganizer(dataPath=datasetDir))
-        datasets.extend(roposData[-1].datasets)
+        if asSingleList:
+            for temp in roposData[-1].datasets:
+                datasets.extend(temp)
+        else:
+            datasets.extend(roposData[-1].datasets)
+
 
     if simulatedPath is not None:
         dataSets_Sim = GetDataSets(simulatedPath)
@@ -41,7 +46,11 @@ def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool 
             simDatasets: List[type(Dataset)] = []
             for datasetDir in dataSets_Sim:
                 roposData.append(DataOrganizer(dataPath=datasetDir))
-                simDatasets.extend(roposData[-1].datasets)
+                if asSingleList:
+                    for temp in roposData[-1].datasets:
+                        simDatasets.extend(temp)
+                else:
+                    simDatasets.extend(roposData[-1].datasets)
 
             simulationCount = int(datasets.__len__() / mixSimulationFactor)
             datasets.extend(simDatasets[:simulationCount])
@@ -49,8 +58,18 @@ def LoadDataSets(realSetPath, simulatedPath = None, mixRealWithSimulation: bool 
     return datasets
 
 
-def LoadDataSet(path: str) -> List[type(Dataset)]:
-    return DataOrganizer(dataPath=path).datasets
+def LoadDataSet(path: str, asSingleList: bool = True) -> List[type(Dataset)]:
+
+    datasets = DataOrganizer(dataPath=path).datasets
+
+    ret = []
+    if asSingleList:
+        for set in datasets:
+            ret.extend(set)
+    else:
+        ret = datasets
+
+    return ret
 
 def LoadDataSetsForFinetuning(paths: List[str], includeNones:bool = False) -> List[type(Dataset)]:
     ret = []
@@ -59,12 +78,12 @@ def LoadDataSetsForFinetuning(paths: List[str], includeNones:bool = False) -> Li
         #append none to reset tracker
         if includeNones:
             ret.append(None)
-        ret.extend(LoadDataSet(dir))
+        ret.extend(LoadDataSet(dir, asSingleList=True))
 
     return ret
 
 
-def FindImages(path: str)-> List[str]:
+def FindImages(path: str) -> List[str]:
     images = []
     for file in os.listdir(path):
         if file.endswith(".png"):
