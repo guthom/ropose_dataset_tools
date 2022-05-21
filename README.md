@@ -15,6 +15,7 @@ This includes:
 * scikit-image
 * simplejson
 * sklearn
+* imgaug
 
 ## Installing (Source)
 Clone the needed repositories to your virtual environment and install requirements:
@@ -54,6 +55,7 @@ This work uses parts from:
 * **pycocotools** http://cocodataset.org
 * **skimage** https://scikit-image.org/
 * **sklearn** https://scikit-learn.org/stable/
+* **imgaug** https://github.com/aleju/imgaug
 * **
 **Thanks to ALL the people who contributed to the projects!**
 
